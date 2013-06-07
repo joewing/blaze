@@ -67,6 +67,7 @@ architecture blaze_arch of blaze is
    signal exec_load        : std_logic;
    signal exec_store       : std_logic;
    signal exec_math        : std_logic;
+   signal update_carry     : std_logic;
    signal flush_fetch      : std_logic;
    signal flush_decode     : std_logic;
 
@@ -77,6 +78,9 @@ architecture blaze_arch of blaze is
    signal esr     : register_type;     -- Exception Status Register
    signal ear     : register_type;     -- Exception Address Register
    signal fsr     : register_type;     -- FPU Status Register
+
+   signal ireg       : std_logic_vector(15 downto 0); -- Immediate register
+   signal ireg_valid : std_logic;
 
    signal next_pc : register_type;
 
@@ -101,6 +105,7 @@ architecture blaze_arch of blaze is
    signal alu_inb          : unsigned(31 downto 0);
    signal alu_cin          : unsigned(31 downto 0);
    signal alu_result       : unsigned(31 downto 0);
+   signal alu_cout         : std_logic;
 
 begin
 
@@ -157,19 +162,29 @@ begin
    decode_rb      <= to_integer(unsigned(decode_instr(15 downto 11)));
    decode_func    <= decode_instr(10 downto 0);
    decode_imm16   <= decode_instr(15 downto 0);
-   decode_imm32   <= resize(signed(decode_imm16), 32);
    decode_sum     <= signed(decode_va) + signed(decode_vb);
    decode_sumi    <= signed(decode_va) + decode_imm32;
    decode_addr    <= std_logic_vector(decode_sumi) when decode_op(3) = '1'
                      else std_logic_vector(decode_sum);
    daddr <= decode_addr;
+   process(ireg, ireg_valid, decode_imm16)
+   begin
+      if ireg_valid = '1' then
+         decode_imm32 <= signed(ireg) & signed(decode_imm16);
+      else
+         decode_imm32 <= resize(signed(decode_imm16), 32);
+      end if;
+   end process;
 
    -- Stage 2: Execute
-   process(decode_op, decode_valid)
+
+   -- Determine the type of instruction.
+   process(decode_op, decode_valid, decode_func)
    begin
-      exec_load   <= '0';
-      exec_store  <= '0';
-      exec_math   <= '0';
+      exec_load      <= '0';
+      exec_store     <= '0';
+      exec_math      <= '0';
+      update_carry   <= '0';
       case decode_op is
          when "110000" | "110001" | "110010" 
             | "111000" | "111001" | "111010" =>
@@ -177,19 +192,35 @@ begin
          when "110100" | "110101" | "110110"
             | "111100" | "111101" | "111110" =>
             exec_store <= decode_valid;
-         when "000000" | "000001" | "000010" | "000011"
-            | "000100" | "000101" | "000110" | "000111"
-            | "001000" | "001001" | "001011" | "001100"
-            | "001101" | "001110" | "001111"
-            | "100000" | "101000" | "100001" | "101001"
-            | "100010" | "101010" | "100011" | "101011"
-            | "010000" | "010010" =>
+         when "000000" | "000010"      -- add[c]
+            | "000001" | "000011"      -- rsub[c]
+            | "001000" | "001010"      -- addi[c]
+            | "001001" | "001011"   => -- rsubi[c]
+            update_carry   <= decode_valid;
+            exec_math      <= decode_valid;
+         when "000100" | "000110"   -- addk[c]
+            | "000101" | "000111"   -- rsubk[c], cmp[u]
+            | "001100" | "001110"   -- addik[ck]
+            | "001101" | "001111"   -- rsubik[ck]
+            | "100000"  -- or, pcmpbf
+            | "101000"  -- ori
+            | "100001"  -- and
+            | "101001"  -- andi
+            | "100010"  -- andn, pcmpeq
+            | "101010"  -- andni
+            | "100011"  -- xor, pcmpne
+            | "101011"  -- xori
+            | "010000"  -- mul, mulh, mulhu, mulhsu
+            | "010010"  -- idiv, idivu
+            | "100100"  -- sra, src, srl, sext, clz, swap, wdc
+            | "010110"  => -- float
             exec_math <= decode_valid;
          when others =>
             null;
       end case;
    end process;
 
+   -- Determine the next execution state.
    process(exec_state, decode_op, dready, decode_valid, exec_load, exec_store)
    begin
       next_exec_state <= exec_state;
@@ -209,6 +240,7 @@ begin
       end case;
    end process;
 
+   -- Update the execution state.
    process(clk)
    begin
       if clk'event and clk = '1' then
@@ -220,6 +252,7 @@ begin
       end if;
    end process;
 
+   -- Drive the bypass signal.
    process(exec_math, exec_load, decode_rd)
    begin
       if exec_math = '1' or exec_load = '1' then
@@ -229,13 +262,19 @@ begin
       end if;
    end process;
 
+   -- Update registers.
    process(clk)
    begin
       if clk'event and clk = '1' then
          case exec_state is
             when EXEC_IDLE =>
-               if decode_valid = '1' and exec_math = '1' then
-                  regs(decode_rd) <= std_logic_vector(alu_result);
+               if decode_valid = '1' then
+                  if exec_math = '1' then
+                     regs(decode_rd) <= std_logic_vector(alu_result);
+                  end if;
+                  if update_carry = '1' then
+                     msr(CARRY_BIT) <= alu_cout;
+                  end if;
                end if;
             when EXEC_INIT_XFER =>
                null;
@@ -246,6 +285,26 @@ begin
          end case;
       end if;
    end process;
+
+   -- Update immediate.
+   process(clk)
+   begin
+      if clk'event and clk = '1' then
+         if rst = '1' then
+            ireg_valid <= '0';
+         elsif decode_valid = '1' and exec_state = EXEC_IDLE then
+            if decode_op = "101100" then
+               ireg <= decode_imm16;
+               ireg_valid <= '1';
+            else
+               ireg_valid <= '0';
+            end if;
+         end if;
+      end if;
+   end process;
+
+   -- Drive the exec_ready signal.
+   -- The pipeline is stalled when this is deasserted.
    exec_ready  <= '1' when next_exec_state = EXEC_IDLE else '0';
 
    -- Drive data memory ports.
@@ -311,39 +370,59 @@ begin
    end process;
 
    -- ALU
-   process(decode_op, alu_ina, alu_inb, exec_din)
+   process(decode_op, decode_func, alu_ina, alu_inb, alu_cin, exec_din)
+      variable ina_c       : unsigned(31 downto 0);
+      variable not_ina_1   : unsigned(31 downto 0);
+      variable not_ina_c   : unsigned(31 downto 0);
    begin
+      ina_c       := alu_ina + alu_cin;
+      not_ina_1   := (not alu_ina) + 1;
+      not_ina_c   := (not alu_ina) + alu_cin;
+      alu_cout    <= '0';
       case decode_op is
-         when "000000" | "001000" =>
+         when "000000" | "001000" | "000100" | "001100" =>  -- add[ik]
             alu_result  <= alu_inb + alu_ina;
-         when "000001" | "001001" =>
-            alu_result <= alu_inb + (not alu_ina) + 1;
-         when "000010" | "001010" =>
-            alu_result <= alu_inb + alu_ina + alu_cin;
-         when "000011" | "001011" =>
-            alu_result <= alu_inb + (not alu_ina) + alu_cin;
-         when "000100" | "001100" =>
-            alu_result <= alu_inb + alu_ina;
-         when "000101" | "001101" =>
-            alu_result <= alu_inb + (not alu_ina) + 1;
-         when "000110" | "001110" =>
-            alu_result <= alu_inb + alu_ina + alu_cin;
-         when "000111" | "001111" =>
-            alu_result <= alu_inb + (not alu_ina) + alu_cin;
-         when "100000" | "101000" =>
+            alu_cout    <= alu_inb(31) and alu_ina(31);
+         when "000101"  => -- rsubk, cmp, cmpu
+            alu_result  <= alu_inb + not_ina_1;
+            if decode_func = "00000000001" then
+               -- cmp
+               if signed(alu_ina) > signed(alu_inb) then
+                  alu_result(31) <= '1';
+               else
+                  alu_result(31) <= '0';
+               end if;
+            elsif decode_func = "00000000011" then
+               -- cmpu
+               if unsigned(alu_ina) > unsigned(alu_inb) then
+                  alu_result(31) <= '1';
+               else
+                  alu_result(31) <= '0';
+               end if;
+            end if;
+         when "000001" | "001001" | "001101" =>  -- rsub[ik]
+            alu_result  <= alu_inb + not_ina_1;
+            alu_cout    <= alu_inb(31) and not_ina_1(31);
+         when "000010" | "001010" | "000110" | "001110" =>  -- addc[ik]
+            alu_result  <= alu_inb + ina_c;
+            alu_cout    <= alu_inb(31) and ina_c(31);
+         when "000011" | "001011" | "000111" | "001111" =>  -- rsubc[ik]
+            alu_result  <= alu_inb + not_ina_c;
+            alu_cout    <= alu_inb(31) and not_ina_c(31);
+         when "100000" | "101000" =>   -- or[i]
             alu_result <= alu_ina or alu_ina;
-         when "100001" | "101001" =>
+         when "100001" | "101001" =>   -- and[i]
             alu_result <= alu_ina and alu_inb;
-         when "100010" | "101010" =>
+         when "100010" | "101010" =>   -- xor[i]
             alu_result <= alu_ina xor alu_inb;
-         when "100011" | "101011" =>
+         when "100011" | "101011" =>   -- andn[i]
             alu_result <= alu_ina and not alu_inb;
          when "010000" =>
             alu_result <= alu_ina * alu_inb;
          when "010010" =>
             alu_result <= alu_inb / alu_ina;
          when others =>
-            alu_result <= unsigned(exec_din);
+            alu_result  <= unsigned(exec_din);
       end case;
    end process;
    alu_cin <= to_unsigned(0, 31) & msr(CARRY_BIT);
