@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.37 (w)1999-2012 BSI
-[*] Fri Jun  7 02:16:44 2013
+[*] Fri Jun  7 02:49:42 2013
 [*]
 [dumpfile] "/Users/joewing/devel/blaze/dump.ghw"
-[dumpfile_mtime] "Thu Jun  6 23:51:04 2013"
-[dumpfile_size] 83402
+[dumpfile_mtime] "Fri Jun  7 02:48:37 2013"
+[dumpfile_size] 79972
 [savefile] "/Users/joewing/devel/blaze/wave.gtkw"
-[timestart] 1013500000
+[timestart] 3281800000
 [size] 2160 968
 [pos] -1 -1
-*-26.279440 1733500000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-26.279440 2995900000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
 [treeopen] top.tb.
 [treeopen] top.tb.cpu.
@@ -20,9 +20,7 @@
 @28
 top.tb.cpu.rst
 top.tb.cpu.clk
-@29
 top.tb.cpu.reading_instr
-@28
 top.tb.cpu.iready
 top.tb.cpu.ire
 @22
@@ -110,7 +108,9 @@ top.tb.cpu.din[0]
 top.tb.cpu.fd_bypass
 @22
 #{top.tb.cpu.decode_vb[31:0]} top.tb.cpu.decode_vb[31] top.tb.cpu.decode_vb[30] top.tb.cpu.decode_vb[29] top.tb.cpu.decode_vb[28] top.tb.cpu.decode_vb[27] top.tb.cpu.decode_vb[26] top.tb.cpu.decode_vb[25] top.tb.cpu.decode_vb[24] top.tb.cpu.decode_vb[23] top.tb.cpu.decode_vb[22] top.tb.cpu.decode_vb[21] top.tb.cpu.decode_vb[20] top.tb.cpu.decode_vb[19] top.tb.cpu.decode_vb[18] top.tb.cpu.decode_vb[17] top.tb.cpu.decode_vb[16] top.tb.cpu.decode_vb[15] top.tb.cpu.decode_vb[14] top.tb.cpu.decode_vb[13] top.tb.cpu.decode_vb[12] top.tb.cpu.decode_vb[11] top.tb.cpu.decode_vb[10] top.tb.cpu.decode_vb[9] top.tb.cpu.decode_vb[8] top.tb.cpu.decode_vb[7] top.tb.cpu.decode_vb[6] top.tb.cpu.decode_vb[5] top.tb.cpu.decode_vb[4] top.tb.cpu.decode_vb[3] top.tb.cpu.decode_vb[2] top.tb.cpu.decode_vb[1] top.tb.cpu.decode_vb[0]
+@23
 #{top.tb.cpu.decode_va[31:0]} top.tb.cpu.decode_va[31] top.tb.cpu.decode_va[30] top.tb.cpu.decode_va[29] top.tb.cpu.decode_va[28] top.tb.cpu.decode_va[27] top.tb.cpu.decode_va[26] top.tb.cpu.decode_va[25] top.tb.cpu.decode_va[24] top.tb.cpu.decode_va[23] top.tb.cpu.decode_va[22] top.tb.cpu.decode_va[21] top.tb.cpu.decode_va[20] top.tb.cpu.decode_va[19] top.tb.cpu.decode_va[18] top.tb.cpu.decode_va[17] top.tb.cpu.decode_va[16] top.tb.cpu.decode_va[15] top.tb.cpu.decode_va[14] top.tb.cpu.decode_va[13] top.tb.cpu.decode_va[12] top.tb.cpu.decode_va[11] top.tb.cpu.decode_va[10] top.tb.cpu.decode_va[9] top.tb.cpu.decode_va[8] top.tb.cpu.decode_va[7] top.tb.cpu.decode_va[6] top.tb.cpu.decode_va[5] top.tb.cpu.decode_va[4] top.tb.cpu.decode_va[3] top.tb.cpu.decode_va[2] top.tb.cpu.decode_va[1] top.tb.cpu.decode_va[0]
+@22
 #{top.tb.cpu.decode_sumi[31:0]} top.tb.cpu.decode_sumi[31] top.tb.cpu.decode_sumi[30] top.tb.cpu.decode_sumi[29] top.tb.cpu.decode_sumi[28] top.tb.cpu.decode_sumi[27] top.tb.cpu.decode_sumi[26] top.tb.cpu.decode_sumi[25] top.tb.cpu.decode_sumi[24] top.tb.cpu.decode_sumi[23] top.tb.cpu.decode_sumi[22] top.tb.cpu.decode_sumi[21] top.tb.cpu.decode_sumi[20] top.tb.cpu.decode_sumi[19] top.tb.cpu.decode_sumi[18] top.tb.cpu.decode_sumi[17] top.tb.cpu.decode_sumi[16] top.tb.cpu.decode_sumi[15] top.tb.cpu.decode_sumi[14] top.tb.cpu.decode_sumi[13] top.tb.cpu.decode_sumi[12] top.tb.cpu.decode_sumi[11] top.tb.cpu.decode_sumi[10] top.tb.cpu.decode_sumi[9] top.tb.cpu.decode_sumi[8] top.tb.cpu.decode_sumi[7] top.tb.cpu.decode_sumi[6] top.tb.cpu.decode_sumi[5] top.tb.cpu.decode_sumi[4] top.tb.cpu.decode_sumi[3] top.tb.cpu.decode_sumi[2] top.tb.cpu.decode_sumi[1] top.tb.cpu.decode_sumi[0]
 @28
 top.tb.cpu.bad_branch

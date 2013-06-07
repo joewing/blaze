@@ -347,8 +347,8 @@ begin
    alu_cin <= to_unsigned(0, 31) & msr(CARRY_BIT);
 
    -- Program counter
-   process(pc, decode_valid, decode_op, decode_ra, decode_vb, decode_pc,
-           decode_sumi)
+   process(pc, decode_valid, decode_op, decode_ra, decode_va, decode_vb,
+           decode_pc, decode_sumi)
       variable pc_plus_vb  : std_logic_vector(31 downto 0);
       variable pc_plus_4   : std_logic_vector(31 downto 0);
       variable pc_plus_imm : std_logic_vector(31 downto 0);
@@ -375,9 +375,41 @@ begin
          next_pc <= pc_plus_imm;
          bad_branch <= '1';
       elsif decode_valid = '1' and decode_op = "101111" then
-         -- BEQI, BNEI, BLTI, etc
-         -- TODO
-         bad_branch <= '1';
+         next_pc <= pc_plus_4;
+         case decode_rd is
+            when 0 | 32 => -- BEQI, BEQID
+               if unsigned(decode_va) = 0 then
+                  next_pc <= pc_plus_imm;
+                  bad_branch <= '1';
+               end if;
+            when 1 | 33 => -- BNEI, BNEID
+               if unsigned(decode_va) /= 0 then
+                  next_pc <= pc_plus_imm;
+                  bad_branch <= '1';
+               end if;
+            when 2 | 34 => -- BLTI, BLTID
+               if signed(decode_va) < 0 then
+                  next_pc <= pc_plus_imm;
+                  bad_branch <= '1';
+               end if;
+            when 3 | 35 => -- BLEI, BLEID
+               if signed(decode_va) <= 0 then
+                  next_pc <= pc_plus_imm;
+                  bad_branch <= '1';
+               end if;
+            when 4 | 36 => -- BGTI, BGTID
+               if signed(decode_va) > 0 then
+                  next_pc <= pc_plus_imm;
+                  bad_branch <= '1';
+               end if;
+            when 5 | 37 => -- BGEI, BGEID
+               if signed(decode_va) >= 0 then
+                  next_pc <= pc_plus_imm;
+                  bad_branch <= '1';
+               end if;
+            when others =>
+               null;
+         end case;
       else
          next_pc <= pc_plus_4;
       end if;
