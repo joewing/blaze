@@ -2,6 +2,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use std.textio.all;
 
 entity tb is
 end tb;
@@ -16,93 +17,92 @@ architecture tb_arch of tb is
       wait for 10 ns;
    end cycle;
 
+   function parse_number(ch : character) return integer is
+   begin
+      case ch is
+         when '0'       => return 0;
+         when '1'       => return 1;
+         when '2'       => return 2;
+         when '3'       => return 3;
+         when '4'       => return 4;
+         when '5'       => return 5;
+         when '6'       => return 6;
+         when '7'       => return 7;
+         when '8'       => return 8;
+         when '9'       => return 9;
+         when 'a' | 'A' => return 10;
+         when 'b' | 'B' => return 11;
+         when 'c' | 'C' => return 12;
+         when 'd' | 'D' => return 13;
+         when 'e' | 'E' => return 14;
+         when 'f' | 'F' => return 15;
+         when others    => return -1;
+      end case;
+   end parse_number;
+
    subtype word_type is std_logic_vector(31 downto 0);
    type word_array_type is array(natural range <>) of word_type;
 
-   signal clk  : std_logic;
-   signal rst  : std_logic;
+   signal clk        : std_logic;
+   signal rst        : std_logic;
+   signal dready     : std_logic;
+   signal din        : std_logic_vector(31 downto 0);
+   signal dout       : std_logic_vector(31 downto 0);
+   signal daddr      : std_logic_vector(31 downto 0);
+   signal dre        : std_logic;
+   signal dwe        : std_logic;
+   signal iready     : std_logic;
+   signal iin        : std_logic_vector(31 downto 0);
+   signal ire        : std_logic;
+   signal iaddr      : std_logic_vector(31 downto 0);
+   signal timer      : natural;
+   signal dbuffer    : std_logic_vector(31 downto 0);
+   signal init_addr  : integer;
+   signal init_data  : std_logic_vector(31 downto 0);
 
-   signal dready  : std_logic;
-   signal din     : std_logic_vector(31 downto 0);
-   signal dout    : std_logic_vector(31 downto 0);
-   signal daddr   : std_logic_vector(31 downto 0);
-   signal dre     : std_logic;
-   signal dwe     : std_logic;
-   signal iready  : std_logic;
-   signal iin     : std_logic_vector(31 downto 0);
-   signal ire     : std_logic;
-   signal iaddr   : std_logic_vector(31 downto 0);
-   signal timer   : natural;
-   signal dbuffer : std_logic_vector(31 downto 0);
-
-   signal instr_ram  : word_array_type(0 to 255) := (
-
-      -- LWI   r1, r0 + 1
-      0        => "111010" & "00001" & "00000" & "0000000000000001",
-
-      -- LWI   r2, r0 + 2
-      1        => "111010" & "00010" & "00000" & "0000000000000010",
-
-      -- ADD   r3, r1, r2
-      2        => "000000" & "00011" & "00001" & "00010" & "00000000000",
-
-      -- ADD   r3, r3, r1
-      3        => "000000" & "00011" & "00011" & "00001" & "00000000000",
-
-      -- ADD   r3, r3, r1
-      4        => "000000" & "00011" & "00011" & "00001" & "00000000000",
-
-      -- SWI   r3, r0 + 3
-      5        => "111110" & "00011" & "00000" & "0000000000000011",
-
-      -- SWI   r2, r0 + 4
-      6        => "111110" & "00010" & "00000" & "0000000000000100",
-
-      -- LWI   r1, r0 + 5
-      7        => "111010" & "00001" & "00000" & "0000000000000101",
-
-      -- AND   r2, r0, r0
-      8        => "100001" & "00010" & "00000" & "00000" & "00000000000",
-
-      -- ADD   r2, r1, r2
-      9        => "000000" & "00010" & "00001" & "00010" & "00000000000",
-
-      -- SWI   r2, r2, 6
-      10       => "111110" & "00010" & "00010" & "0000000000000101",
-
-      -- RSUBI r3, r2, 10
-      11       => "001001" & "00011" & "00010" & "0000000000001010",
-
-      -- BNEI r3, -12
-      12       => "101111" & "00001" & "00011" & "1111111111110100",
-
-      -- BRID  -52
-      13       => "101110" & "00000" & "10000" & "1111111111001100",
-
-      -- SWI   r3, r2, 0
-      14       => "111110" & "00011" & "00010" & "0000000000000000",
-
---      12       => "101110" & "00000" & "00000" & "1111111111110100",
---      11       => "101110" & "00000" & "00000" & "1111111111111000",
-
-      others   => (others => '0')
-   );
-   signal data_ram   : word_array_type(0 to 255) := (
-      1        => std_logic_vector(to_unsigned(5, 32)),
-      2        => std_logic_vector(to_unsigned(12, 32)),
-      5        => std_logic_vector(to_unsigned(1, 32)),
-      others   => (others => 'X')
-   );
+   signal ram : word_array_type(0 to 1023) := (others => (others => 'X'));
 
 begin
 
    process
+
+      file     infile   : text is "input.hex";
+      variable temp     : line;
+      variable ch       : character;
+      variable good     : boolean;
+      variable word     : integer;
+      variable nibble   : natural;
+      variable index    : natural;
+
    begin
 
-      rst <= '1';
-      cycle(clk);
+      -- Read the program into memory.
+      rst      <= '1';
+      index    := 0;
+      word     := 0;
+      nibble   := 0;
+      while not endfile(infile) loop
+         readline(infile, temp);
+         loop
+            read(temp, ch, good);
+            exit when not good;
+            if parse_number(ch) >= 0 then
+               word   := word * 16 + parse_number(ch);
+               nibble := nibble + 1;
+               if nibble = 8 then
+                  init_addr <= index;
+                  init_data <= std_logic_vector(to_signed(word, 32));
+                  cycle(clk);
+                  index  := index + 1;
+                  nibble := 0;
+               end if;
+            end if;
+         end loop;
+      end loop;
+      report "Read " & integer'image(index) & " words";
+      
+      -- Run for a while.
       rst <= '0';
-
       for i in 1 to 1000 loop
          cycle(clk);
       end loop;
@@ -118,17 +118,20 @@ begin
          if rst = '1' then
             timer    <= 0;
             dbuffer  <= (others => 'Z');
+            ram(init_addr) <= init_data;
+            report "INIT[" & integer'image(init_addr * 4) &
+                   "] <= " & integer'image(to_integer(signed(init_data)));
          elsif dre = '1' then
             timer    <= 10;
-            report "READ: [" & integer'image(to_integer(unsigned(daddr))) &
+            report "READ[" & integer'image(to_integer(unsigned(daddr))) &
                "] => " & integer'image(to_integer(
-               unsigned(data_ram(to_integer(unsigned(daddr))))));
-            dbuffer  <= data_ram(to_integer(unsigned(daddr)));
+               unsigned(ram(to_integer(unsigned(daddr(31 downto 2)))))));
+            dbuffer  <= ram(to_integer(unsigned(daddr(31 downto 2))));
          elsif dwe = '1' then
             timer    <= 10;
-            report "WRITE: [" & integer'image(to_integer(unsigned(daddr))) &
+            report "WRITE[" & integer'image(to_integer(unsigned(daddr))) &
                "] <= " & integer'image(to_integer(unsigned(dout)));
-            data_ram(to_integer(unsigned(daddr))) <= dout;
+            ram(to_integer(unsigned(daddr(31 downto 2)))) <= dout;
          elsif timer > 0 then
             timer <= timer - 1;
          end if;
@@ -144,7 +147,7 @@ begin
          if rst = '1' then
             iready <= '1';
          elsif ire = '1' then
-            iin      <= instr_ram(to_integer(unsigned(iaddr(31 downto 2))));
+            iin      <= ram(to_integer(unsigned(iaddr(31 downto 2))));
             iready   <= '1';
          end if;
       end if;
