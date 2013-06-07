@@ -350,7 +350,7 @@ begin
 
    -- Program counter
    process(pc, decode_valid, decode_op, decode_ra, decode_va, decode_vb,
-           decode_pc, decode_sumi)
+           decode_pc, decode_sumi, decode_imm32)
       variable pc_plus_vb  : std_logic_vector(31 downto 0);
       variable pc_plus_4   : std_logic_vector(31 downto 0);
       variable pc_plus_imm : std_logic_vector(31 downto 0);
