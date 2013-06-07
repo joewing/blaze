@@ -54,6 +54,7 @@ architecture blaze_arch of blaze is
    signal decode_imm16  : std_logic_vector(15 downto 0);
    signal decode_va     : register_type;
    signal decode_vb     : register_type;
+   signal decode_imm32  : signed(31 downto 0);
    signal decode_sum    : signed(31 downto 0);
    signal decode_sumi   : signed(31 downto 0);
    signal decode_addr   : std_logic_vector(31 downto 0);
@@ -66,8 +67,8 @@ architecture blaze_arch of blaze is
    signal exec_load        : std_logic;
    signal exec_store       : std_logic;
    signal exec_math        : std_logic;
-   signal bad_branch       : std_logic;
-   signal reading_instr    : std_logic;
+   signal flush_fetch      : std_logic;
+   signal flush_decode     : std_logic;
 
    signal regs    : register_array_type;
    signal pc      : register_type;     -- Program Counter
@@ -110,7 +111,7 @@ begin
          if rst = '1' then
             fetch_valid <= '0';
          elsif exec_ready = '1' then
-            fetch_valid <= iready and not bad_branch;
+            fetch_valid <= iready and not flush_fetch;
             fetch_pc    <= pc;
             fetch_instr <= iin;
          end if;
@@ -130,7 +131,7 @@ begin
          if rst = '1' then
             decode_valid <= '0';
          elsif exec_ready = '1' then
-            decode_valid   <= fetch_valid and not bad_branch;
+            decode_valid   <= fetch_valid and not flush_decode;
             decode_pc      <= fetch_pc;
             decode_instr   <= fetch_instr;
             if fetch_ra = 0 then
@@ -156,8 +157,9 @@ begin
    decode_rb      <= to_integer(unsigned(decode_instr(15 downto 11)));
    decode_func    <= decode_instr(10 downto 0);
    decode_imm16   <= decode_instr(15 downto 0);
+   decode_imm32   <= resize(signed(decode_imm16), 32);
    decode_sum     <= signed(decode_va) + signed(decode_vb);
-   decode_sumi    <= signed(decode_va) + resize(signed(decode_imm16), 32);
+   decode_sumi    <= signed(decode_va) + decode_imm32;
    decode_addr    <= std_logic_vector(decode_sumi) when decode_op(3) = '1'
                      else std_logic_vector(decode_sum);
    daddr <= decode_addr;
@@ -300,12 +302,12 @@ begin
    -- Drive ALU inputs.
    process(decode_instr, decode_va, decode_vb, decode_imm16)
    begin
-      if decode_instr(29) = '0' then
-         alu_ina <= unsigned(decode_va);
+      if decode_op(3) = '0' then
+         alu_inb <= unsigned(decode_vb);
       else
-         alu_ina <= unsigned(resize(signed(decode_imm16), 32));
+         alu_inb <= unsigned(resize(signed(decode_imm16), 32));
       end if;
-      alu_inb <= unsigned(decode_vb);
+      alu_ina <= unsigned(decode_va);
    end process;
 
    -- ALU
@@ -352,66 +354,68 @@ begin
       variable pc_plus_vb  : std_logic_vector(31 downto 0);
       variable pc_plus_4   : std_logic_vector(31 downto 0);
       variable pc_plus_imm : std_logic_vector(31 downto 0);
+      variable take_branch : boolean;
    begin
       pc_plus_vb  := std_logic_vector(signed(decode_pc) + signed(decode_vb));
       pc_plus_4   := std_logic_vector(signed(pc) + to_signed(4, 32));
-      pc_plus_imm := std_logic_vector(signed(decode_pc) + decode_sumi +
+      pc_plus_imm := std_logic_vector(signed(decode_pc) + decode_imm32 +
                                       to_signed(-4, 32));
-      bad_branch <= '0';
+      flush_fetch    <= '0';
+      flush_decode   <= '0';
+      next_pc        <= pc_plus_4;
       if decode_valid = '1' and decode_op = "100110" then
-         -- BR, BRD, BRLD, BRA, BRAD, BRALD, BRK
          case decode_ra is
-            when 0 | 16 | 20 =>
-               -- Relative branch.
-               next_pc <= pc_plus_vb;
-               bad_branch <= '1';
-            when others    =>
-               -- Absolute branch.
-               next_pc <= decode_vb;
-               bad_branch <= '1';
-         end case;
-      elsif decode_valid = '1' and decode_op = "101110" then
-         -- BRI, BRID, BRLID, BRAI, BRAID, BRAIDR, BRKI
-         next_pc <= pc_plus_imm;
-         bad_branch <= '1';
-      elsif decode_valid = '1' and decode_op = "101111" then
-         next_pc <= pc_plus_4;
-         case decode_rd is
-            when 0 | 32 => -- BEQI, BEQID
-               if unsigned(decode_va) = 0 then
-                  next_pc <= pc_plus_imm;
-                  bad_branch <= '1';
-               end if;
-            when 1 | 33 => -- BNEI, BNEID
-               if unsigned(decode_va) /= 0 then
-                  next_pc <= pc_plus_imm;
-                  bad_branch <= '1';
-               end if;
-            when 2 | 34 => -- BLTI, BLTID
-               if signed(decode_va) < 0 then
-                  next_pc <= pc_plus_imm;
-                  bad_branch <= '1';
-               end if;
-            when 3 | 35 => -- BLEI, BLEID
-               if signed(decode_va) <= 0 then
-                  next_pc <= pc_plus_imm;
-                  bad_branch <= '1';
-               end if;
-            when 4 | 36 => -- BGTI, BGTID
-               if signed(decode_va) > 0 then
-                  next_pc <= pc_plus_imm;
-                  bad_branch <= '1';
-               end if;
-            when 5 | 37 => -- BGEI, BGEID
-               if signed(decode_va) >= 0 then
-                  next_pc <= pc_plus_imm;
-                  bad_branch <= '1';
-               end if;
+            when 0 => -- BR
+               next_pc        <= pc_plus_vb;
+               flush_fetch    <= '1';
+               flush_decode   <= '1';
+            when 16 | 20 => -- BRD, BRLD
+               next_pc        <= pc_plus_vb;
+               flush_decode   <= '1';
+            when 8 | 12 => -- BRA, BRK
+               next_pc        <= decode_vb;
+               flush_fetch    <= '1';
+               flush_decode   <= '1';
+            when 24 | 28 => -- BRAD, BRALD
+               next_pc        <= decode_vb;
+               flush_decode   <= '1';
             when others =>
                null;
          end case;
-      else
-         next_pc <= pc_plus_4;
+      elsif decode_valid = '1' and decode_op = "101110" then
+         -- BRI, BRID, BRLID, BRAI, BRAID, BRAIDR, BRKI
+         next_pc        <= pc_plus_imm;
+         flush_decode   <= '1';
+         if to_unsigned(decode_ra, 5)(4) = '0' then
+            -- No delay slot.
+            flush_fetch <= '1';
+         end if;
+      elsif decode_valid = '1' and decode_op = "101111" then
+         take_branch := false;
+         case decode_rd is
+            when 0 | 32 => -- BEQI, BEQID
+               take_branch := unsigned(decode_va) = 0;
+            when 1 | 33 => -- BNEI, BNEID
+               take_branch := unsigned(decode_va) /= 0;
+            when 2 | 34 => -- BLTI, BLTID
+               take_branch := signed(decode_va) < 0;
+            when 3 | 35 => -- BLEI, BLEID
+               take_branch := signed(decode_va) <= 0;
+            when 4 | 36 => -- BGTI, BGTID
+               take_branch := signed(decode_va) > 0;
+            when 5 | 37 => -- BGEI, BGEID
+               take_branch := signed(decode_va) >= 0;
+            when others =>
+               null;
+         end case;
+         if take_branch then
+            if to_unsigned(decode_rd, 5)(4) = '0' then
+               -- No delay slot.
+               flush_fetch <= '1';
+            end if;
+            flush_decode <= '1';
+            next_pc <= pc_plus_imm;
+         end if;
       end if;
    end process;
 
@@ -420,13 +424,9 @@ begin
       if clk'event and clk = '1' then
          if rst = '1' then
             pc <= (others => '0');
-            reading_instr <= '0';
          elsif iready = '1' then
             if exec_ready = '1' then
                pc <= next_pc;
-               reading_instr <= '1';
-            else
-               reading_instr <= '0';
             end if;
          end if;
       end if;
