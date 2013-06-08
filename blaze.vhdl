@@ -216,10 +216,10 @@ begin
             | "101010"  -- andni
             | "100011"  -- xor, pcmpne
             | "101011"  -- xori
-            | "010000"  -- mul, mulh, mulhu, mulhsu
+            | "010000" | "011000"   -- mul, muli
             | "010010"  -- idiv, idivu
             | "100100"  -- sra, src, srl, sext, clz, swap, wdc
-            | "010001"  -- bs
+            | "010001" | "011001" -- bs, bsi
             | "010110"  => -- float
             exec_math <= decode_valid;
          when others =>
@@ -237,7 +237,7 @@ begin
             if decode_valid = '1' then
                if exec_load = '1' or exec_store = '1' then
                   next_exec_state <= EXEC_INIT_XFER;
-               elsif decode_op = "010000" then
+               elsif decode_op = "010000" or decode_op = "011000" then
                   next_exec_state <= EXEC_MULT;
                end if;
             end if;
@@ -442,8 +442,9 @@ begin
             else
                alu_result <= mult_result(63 downto 32);
             end if;
-         when "010001" =>
-            -- Barrel shift
+         when "011000" =>
+            alu_result <= mult_result(31 downto 0);
+         when "010001" | "011001" => -- bs, bsi
             for i in 0 to 31 loop
                if alu_inb(4 downto 0) = i then
                   if decode_func(10) = '1' then
