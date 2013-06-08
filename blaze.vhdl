@@ -109,7 +109,9 @@ architecture blaze_arch of blaze is
    signal alu_cout         : std_logic;
    signal mult_start       : std_logic;
    signal mult_ready       : std_logic;
-   signal mult_result      : unsigned(31 downto 0);
+   signal mult_a_signed    : std_logic;
+   signal mult_b_signed    : std_logic;
+   signal mult_result      : unsigned(63 downto 0);
 
 begin
 
@@ -217,6 +219,7 @@ begin
             | "010000"  -- mul, mulh, mulhu, mulhsu
             | "010010"  -- idiv, idivu
             | "100100"  -- sra, src, srl, sext, clz, swap, wdc
+            | "010001"  -- bs
             | "010110"  => -- float
             exec_math <= decode_valid;
          when others =>
@@ -434,7 +437,27 @@ begin
          when "100011" | "101011" =>   -- andn[i]
             alu_result <= alu_ina and not alu_inb;
          when "010000" =>
-            alu_result <= mult_result;
+            if decode_func = "00000000000" then
+               alu_result <= mult_result(31 downto 0);
+            else
+               alu_result <= mult_result(63 downto 32);
+            end if;
+         when "010001" =>
+            -- Barrel shift
+            for i in 0 to 31 loop
+               if alu_inb(4 downto 0) = i then
+                  if decode_func(10) = '1' then
+                     -- Shift left
+                     alu_result <= shift_left(alu_ina, i);
+                  elsif decode_func(9) = '1' then
+                     -- Shift right arithmetic.
+                     alu_result <= unsigned(shift_right(signed(alu_ina), i));
+                  else
+                     -- Shift right logical.
+                     alu_result <= shift_right(alu_ina, i);
+                  end if;
+               end if;
+            end loop;
          when "010010" =>
             alu_result <= (others => 'X'); -- TODO
          when others =>
@@ -443,7 +466,28 @@ begin
    end process;
    alu_cin <= to_unsigned(0, 31) & msr(CARRY_BIT);
 
-   mult_start <= '1' when exec_state = EXEC_IDLE else '0';
+   process(exec_state, decode_func)
+   begin
+      mult_start     <= '0';
+      mult_a_signed  <= '0';
+      mult_b_signed  <= '0';
+      if exec_state = EXEC_IDLE then
+         mult_start <= '1';
+      end if;
+      case decode_func is
+         when "00000000001" =>
+            -- mulh
+            mult_a_signed <= '1';
+            mult_b_signed <= '1';
+         when "00000000010" =>
+            -- mulhsu
+            mult_a_signed <= '1';
+         when others =>
+            -- mul, mulhu
+            null;
+      end case;
+   end process;
+
    mult : entity work.blaze_multiplier
       generic map (
          WIDTH => 32
@@ -454,6 +498,8 @@ begin
          ready    => mult_ready,
          ina      => alu_ina,
          inb      => alu_inb,
+         a_signed => mult_a_signed,
+         b_signed => mult_b_signed,
          result   => mult_result
       );
 
