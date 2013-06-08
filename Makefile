@@ -1,5 +1,5 @@
 
-FILES= blaze.vhdl tb.vhdl
+FILES= blaze_multiplier.vhdl blaze.vhdl tb.vhdl
 
 all:
 	ghdl -a $(FILES)

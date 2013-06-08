@@ -26,7 +26,8 @@ architecture blaze_arch of blaze is
    type exec_state_type is (
       EXEC_IDLE,
       EXEC_INIT_XFER,
-      EXEC_WAIT_XFER
+      EXEC_WAIT_XFER,
+      EXEC_MULT
    );
 
    subtype register_type is std_logic_vector(31 downto 0);
@@ -106,6 +107,8 @@ architecture blaze_arch of blaze is
    signal alu_cin          : unsigned(31 downto 0);
    signal alu_result       : unsigned(31 downto 0);
    signal alu_cout         : std_logic;
+   signal mult_ready       : std_logic;
+   signal mult_result      : unsigned(31 downto 0);
 
 begin
 
@@ -229,12 +232,18 @@ begin
             if decode_valid = '1' then
                if exec_load = '1' or exec_store = '1' then
                   next_exec_state <= EXEC_INIT_XFER;
+               elsif decode_op = "010000" then
+                  next_exec_state <= EXEC_MULT;
                end if;
             end if;
          when EXEC_INIT_XFER =>
             next_exec_state <= EXEC_WAIT_XFER;
          when EXEC_WAIT_XFER =>
             if dready = '1' then
+               next_exec_state <= EXEC_IDLE;
+            end if;
+         when EXEC_MULT =>
+            if mult_ready = '1' then
                next_exec_state <= EXEC_IDLE;
             end if;
       end case;
@@ -280,6 +289,10 @@ begin
                null;
             when EXEC_WAIT_XFER =>
                if exec_load = '1' and dready = '1' then
+                  regs(decode_rd) <= std_logic_vector(alu_result);
+               end if;
+            when EXEC_MULT =>
+               if mult_ready = '1' then
                   regs(decode_rd) <= std_logic_vector(alu_result);
                end if;
          end case;
@@ -418,7 +431,7 @@ begin
          when "100011" | "101011" =>   -- andn[i]
             alu_result <= alu_ina and not alu_inb;
          when "010000" =>
-            alu_result <= alu_ina * alu_inb;
+            alu_result <= mult_result;
          when "010010" =>
             alu_result <= alu_inb / alu_ina;
          when others =>
@@ -426,6 +439,19 @@ begin
       end case;
    end process;
    alu_cin <= to_unsigned(0, 31) & msr(CARRY_BIT);
+
+   mult : entity work.blaze_multiplier
+      generic map (
+         WIDTH => 32
+      )
+      port map (
+         clk      => clk,
+         start    => exec_ready,
+         ready    => mult_ready,
+         ina      => alu_ina,
+         inb      => alu_inb,
+         result   => mult_result
+      );
 
    -- Program counter
    process(pc, decode_valid, decode_op, decode_ra, decode_va, decode_vb,
