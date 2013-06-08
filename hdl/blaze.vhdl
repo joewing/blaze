@@ -27,7 +27,7 @@ architecture blaze_arch of blaze is
       EXEC_IDLE,
       EXEC_INIT_XFER,
       EXEC_WAIT_XFER,
-      EXEC_MULT
+      EXEC_ALU
    );
 
    subtype register_type is std_logic_vector(31 downto 0);
@@ -102,16 +102,13 @@ architecture blaze_arch of blaze is
    constant CARRY_BIT      : natural   := 29;   -- Arithmetic Carry
    constant IE_BIT         : natural   := 30;   -- Interrupt Enable
 
+   signal alu_start        : std_logic;
+   signal alu_ready        : std_logic;
    signal alu_ina          : unsigned(31 downto 0);
    signal alu_inb          : unsigned(31 downto 0);
    signal alu_cin          : unsigned(31 downto 0);
    signal alu_result       : unsigned(31 downto 0);
    signal alu_cout         : std_logic;
-   signal mult_start       : std_logic;
-   signal mult_ready       : std_logic;
-   signal mult_a_signed    : std_logic;
-   signal mult_b_signed    : std_logic;
-   signal mult_result      : unsigned(63 downto 0);
 
 begin
 
@@ -229,7 +226,7 @@ begin
 
    -- Determine the next execution state.
    process(exec_state, decode_op, dready, decode_valid, exec_load,
-           exec_store, mult_ready)
+           exec_store, alu_ready)
    begin
       next_exec_state <= exec_state;
       case exec_state is
@@ -238,7 +235,11 @@ begin
                if exec_load = '1' or exec_store = '1' then
                   next_exec_state <= EXEC_INIT_XFER;
                elsif decode_op = "010000" or decode_op = "011000" then
-                  next_exec_state <= EXEC_MULT;
+                  -- Multiply
+                  next_exec_state <= EXEC_ALU;
+               elsif decode_op = "010010" then
+                  -- Divide
+                  next_exec_state <= EXEC_ALU;
                end if;
             end if;
          when EXEC_INIT_XFER =>
@@ -247,8 +248,8 @@ begin
             if dready = '1' then
                next_exec_state <= EXEC_IDLE;
             end if;
-         when EXEC_MULT =>
-            if mult_ready = '1' then
+         when EXEC_ALU =>
+            if alu_ready = '1' then
                next_exec_state <= EXEC_IDLE;
             end if;
       end case;
@@ -296,8 +297,8 @@ begin
                if exec_load = '1' and dready = '1' then
                   regs(decode_rd) <= std_logic_vector(alu_result);
                end if;
-            when EXEC_MULT =>
-               if mult_ready = '1' then
+            when EXEC_ALU =>
+               if alu_ready = '1' then
                   regs(decode_rd) <= std_logic_vector(alu_result);
                end if;
          end case;
@@ -384,124 +385,27 @@ begin
       else
          alu_inb <= unsigned(resize(signed(decode_imm16), 32));
       end if;
+      if exec_state = EXEC_IDLE then
+         alu_start <= '1';
+      else
+         alu_start <= '0';
+      end if;
       alu_ina <= unsigned(decode_va);
    end process;
 
-   -- ALU
-   process(decode_op, decode_func, alu_ina, alu_inb, alu_cin, exec_din,
-           mult_result)
-      variable ina_c       : unsigned(31 downto 0);
-      variable not_ina_1   : unsigned(31 downto 0);
-      variable not_ina_c   : unsigned(31 downto 0);
-   begin
-      ina_c       := alu_ina + alu_cin;
-      not_ina_1   := (not alu_ina) + 1;
-      not_ina_c   := (not alu_ina) + alu_cin;
-      alu_cout    <= '0';
-      case decode_op is
-         when "000000" | "001000" | "000100" | "001100" =>  -- add[ik]
-            alu_result  <= alu_inb + alu_ina;
-            alu_cout    <= alu_inb(31) and alu_ina(31);
-         when "000101"  => -- rsubk, cmp, cmpu
-            alu_result  <= alu_inb + not_ina_1;
-            if decode_func = "00000000001" then
-               -- cmp
-               if signed(alu_ina) > signed(alu_inb) then
-                  alu_result(31) <= '1';
-               else
-                  alu_result(31) <= '0';
-               end if;
-            elsif decode_func = "00000000011" then
-               -- cmpu
-               if unsigned(alu_ina) > unsigned(alu_inb) then
-                  alu_result(31) <= '1';
-               else
-                  alu_result(31) <= '0';
-               end if;
-            end if;
-         when "000001" | "001001" | "001101" =>  -- rsub[ik]
-            alu_result  <= alu_inb + not_ina_1;
-            alu_cout    <= alu_inb(31) and not_ina_1(31);
-         when "000010" | "001010" | "000110" | "001110" =>  -- addc[ik]
-            alu_result  <= alu_inb + ina_c;
-            alu_cout    <= alu_inb(31) and ina_c(31);
-         when "000011" | "001011" | "000111" | "001111" =>  -- rsubc[ik]
-            alu_result  <= alu_inb + not_ina_c;
-            alu_cout    <= alu_inb(31) and not_ina_c(31);
-         when "100000" | "101000" =>   -- or[i]
-            alu_result <= alu_ina or alu_ina;
-         when "100001" | "101001" =>   -- and[i]
-            alu_result <= alu_ina and alu_inb;
-         when "100010" | "101010" =>   -- xor[i]
-            alu_result <= alu_ina xor alu_inb;
-         when "100011" | "101011" =>   -- andn[i]
-            alu_result <= alu_ina and not alu_inb;
-         when "010000" =>
-            if decode_func = "00000000000" then
-               alu_result <= mult_result(31 downto 0);
-            else
-               alu_result <= mult_result(63 downto 32);
-            end if;
-         when "011000" =>
-            alu_result <= mult_result(31 downto 0);
-         when "010001" | "011001" => -- bs, bsi
-            for i in 0 to 31 loop
-               if alu_inb(4 downto 0) = i then
-                  if decode_func(10) = '1' then
-                     -- Shift left
-                     alu_result <= shift_left(alu_ina, i);
-                  elsif decode_func(9) = '1' then
-                     -- Shift right arithmetic.
-                     alu_result <= unsigned(shift_right(signed(alu_ina), i));
-                  else
-                     -- Shift right logical.
-                     alu_result <= shift_right(alu_ina, i);
-                  end if;
-               end if;
-            end loop;
-         when "010010" =>
-            alu_result <= (others => 'X'); -- TODO
-         when others =>
-            alu_result  <= unsigned(exec_din);
-      end case;
-   end process;
-   alu_cin <= to_unsigned(0, 31) & msr(CARRY_BIT);
-
-   process(exec_state, decode_func)
-   begin
-      mult_start     <= '0';
-      mult_a_signed  <= '0';
-      mult_b_signed  <= '0';
-      if exec_state = EXEC_IDLE then
-         mult_start <= '1';
-      end if;
-      case decode_func is
-         when "00000000001" =>
-            -- mulh
-            mult_a_signed <= '1';
-            mult_b_signed <= '1';
-         when "00000000010" =>
-            -- mulhsu
-            mult_a_signed <= '1';
-         when others =>
-            -- mul, mulhu
-            null;
-      end case;
-   end process;
-
-   mult : entity work.blaze_multiplier
-      generic map (
-         WIDTH => 32
-      )
+   alu : entity work.blaze_alu
       port map (
          clk      => clk,
-         start    => mult_start,
-         ready    => mult_ready,
+         start    => alu_start,
+         op       => decode_op,
+         func     => decode_func,
          ina      => alu_ina,
          inb      => alu_inb,
-         a_signed => mult_a_signed,
-         b_signed => mult_b_signed,
-         result   => mult_result
+         din      => exec_din,
+         cin      => msr(CARRY_BIT),
+         ready    => alu_ready,
+         result   => alu_result,
+         cout     => alu_cout
       );
 
    -- Program counter
