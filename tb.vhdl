@@ -125,12 +125,12 @@ begin
             timer    <= 10;
             report "READ[" & integer'image(to_integer(unsigned(daddr))) &
                "] => " & integer'image(to_integer(
-               unsigned(ram(to_integer(unsigned(daddr(30 downto 2)))))));
+               signed(ram(to_integer(unsigned(daddr(30 downto 2)))))));
             dbuffer  <= ram(to_integer(unsigned(daddr(30 downto 2))));
          elsif dwe = '1' then
             timer    <= 10;
             report "WRITE[" & integer'image(to_integer(unsigned(daddr))) &
-               "] <= " & integer'image(to_integer(unsigned(dout)));
+               "] <= " & integer'image(to_integer(signed(dout)));
             ram(to_integer(unsigned(daddr(30 downto 2)))) <= dout;
          elsif timer > 0 then
             timer <= timer - 1;
