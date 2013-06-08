@@ -30,14 +30,16 @@ begin
 
    process(clk)
    begin
-      if start = '1' then
-         a     <= ina;
-         b     <= inb;
-         sum   <= (others => '0');
-      elsif a /= 0 then
-         sum   <= sum + resize(temp_a * temp_b, WIDTH);
-         a     <= shift_right(a, SHIFT);
-         b     <= shift_left(b, SHIFT);
+      if clk'event and clk = '1' then
+         if start = '1' then
+            a     <= ina;
+            b     <= inb;
+            sum   <= (others => '0');
+         elsif a /= 0 then
+            sum   <= sum + resize(temp_a * temp_b, WIDTH);
+            a     <= shift_right(a, SHIFT);
+            b     <= shift_left(b, SHIFT);
+         end if;
       end if;
    end process;
 

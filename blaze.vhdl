@@ -107,6 +107,7 @@ architecture blaze_arch of blaze is
    signal alu_cin          : unsigned(31 downto 0);
    signal alu_result       : unsigned(31 downto 0);
    signal alu_cout         : std_logic;
+   signal mult_start       : std_logic;
    signal mult_ready       : std_logic;
    signal mult_result      : unsigned(31 downto 0);
 
@@ -224,7 +225,8 @@ begin
    end process;
 
    -- Determine the next execution state.
-   process(exec_state, decode_op, dready, decode_valid, exec_load, exec_store)
+   process(exec_state, decode_op, dready, decode_valid, exec_load,
+           exec_store, mult_ready)
    begin
       next_exec_state <= exec_state;
       case exec_state is
@@ -383,7 +385,8 @@ begin
    end process;
 
    -- ALU
-   process(decode_op, decode_func, alu_ina, alu_inb, alu_cin, exec_din)
+   process(decode_op, decode_func, alu_ina, alu_inb, alu_cin, exec_din,
+           mult_result)
       variable ina_c       : unsigned(31 downto 0);
       variable not_ina_1   : unsigned(31 downto 0);
       variable not_ina_c   : unsigned(31 downto 0);
@@ -433,20 +436,21 @@ begin
          when "010000" =>
             alu_result <= mult_result;
          when "010010" =>
-            alu_result <= alu_inb / alu_ina;
+            alu_result <= (others => 'X'); -- TODO
          when others =>
             alu_result  <= unsigned(exec_din);
       end case;
    end process;
    alu_cin <= to_unsigned(0, 31) & msr(CARRY_BIT);
 
+   mult_start <= '1' when exec_state = EXEC_IDLE else '0';
    mult : entity work.blaze_multiplier
       generic map (
          WIDTH => 32
       )
       port map (
          clk      => clk,
-         start    => exec_ready,
+         start    => mult_start,
          ready    => mult_ready,
          ina      => alu_ina,
          inb      => alu_inb,

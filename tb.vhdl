@@ -60,7 +60,7 @@ architecture tb_arch of tb is
    signal init_addr  : integer;
    signal init_data  : std_logic_vector(31 downto 0);
 
-   signal ram : word_array_type(0 to 1023) := (others => (others => 'X'));
+   signal ram : word_array_type(0 to 255) := (others => (others => 'X'));
 
 begin
 
@@ -125,13 +125,13 @@ begin
             timer    <= 10;
             report "READ[" & integer'image(to_integer(unsigned(daddr))) &
                "] => " & integer'image(to_integer(
-               unsigned(ram(to_integer(unsigned(daddr(31 downto 2)))))));
-            dbuffer  <= ram(to_integer(unsigned(daddr(31 downto 2))));
+               unsigned(ram(to_integer(unsigned(daddr(30 downto 2)))))));
+            dbuffer  <= ram(to_integer(unsigned(daddr(30 downto 2))));
          elsif dwe = '1' then
             timer    <= 10;
             report "WRITE[" & integer'image(to_integer(unsigned(daddr))) &
                "] <= " & integer'image(to_integer(unsigned(dout)));
-            ram(to_integer(unsigned(daddr(31 downto 2)))) <= dout;
+            ram(to_integer(unsigned(daddr(30 downto 2)))) <= dout;
          elsif timer > 0 then
             timer <= timer - 1;
          end if;
@@ -147,7 +147,7 @@ begin
          if rst = '1' then
             iready <= '1';
          elsif ire = '1' then
-            iin      <= ram(to_integer(unsigned(iaddr(31 downto 2))));
+            iin      <= ram(to_integer(unsigned(iaddr(30 downto 2))));
             iready   <= '1';
          end if;
       end if;
