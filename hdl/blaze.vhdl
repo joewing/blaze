@@ -38,9 +38,9 @@ architecture blaze_arch of blaze is
    signal fetch_pc      : std_logic_vector(31 downto 0);
    signal fetch_instr   : std_logic_vector(31 downto 0);
    signal fetch_op      : std_logic_vector(5 downto 0);
-   signal fetch_rd      : natural;
-   signal fetch_ra      : natural;
-   signal fetch_rb      : natural;
+   signal fetch_rd      : unsigned(4 downto 0);
+   signal fetch_ra      : unsigned(4 downto 0);
+   signal fetch_rb      : unsigned(4 downto 0);
    signal fetch_func    : std_logic_vector(10 downto 0);
    signal fetch_imm16   : std_logic_vector(15 downto 0);
 
@@ -48,9 +48,9 @@ architecture blaze_arch of blaze is
    signal decode_pc     : std_logic_vector(31 downto 0);
    signal decode_instr  : std_logic_vector(31 downto 0);
    signal decode_op     : std_logic_vector(5 downto 0);
-   signal decode_rd     : natural;
-   signal decode_ra     : natural;
-   signal decode_rb     : natural;
+   signal decode_rd     : unsigned(4 downto 0);
+   signal decode_ra     : unsigned(4 downto 0);
+   signal decode_rb     : unsigned(4 downto 0);
    signal decode_func   : std_logic_vector(10 downto 0);
    signal decode_imm16  : std_logic_vector(15 downto 0);
    signal decode_va     : register_type;
@@ -59,7 +59,7 @@ architecture blaze_arch of blaze is
    signal decode_sum    : signed(31 downto 0);
    signal decode_sumi   : signed(31 downto 0);
    signal decode_addr   : std_logic_vector(31 downto 0);
-   signal fd_bypass     : natural;
+   signal fd_bypass     : unsigned(4 downto 0);
 
    signal exec_ready       : std_logic;
    signal exec_state       : exec_state_type;
@@ -68,6 +68,8 @@ architecture blaze_arch of blaze is
    signal exec_load        : std_logic;
    signal exec_store       : std_logic;
    signal exec_math        : std_logic;
+   signal exec_link        : std_logic;
+   signal wait_alu         : std_logic;
    signal update_carry     : std_logic;
    signal flush_fetch      : std_logic;
    signal flush_decode     : std_logic;
@@ -126,9 +128,9 @@ begin
       end if;
    end process;
    fetch_op    <= fetch_instr(31 downto 26);
-   fetch_rd    <= to_integer(unsigned(fetch_instr(25 downto 21)));
-   fetch_ra    <= to_integer(unsigned(fetch_instr(20 downto 16)));
-   fetch_rb    <= to_integer(unsigned(fetch_instr(15 downto 11)));
+   fetch_rd    <= unsigned(fetch_instr(25 downto 21));
+   fetch_ra    <= unsigned(fetch_instr(20 downto 16));
+   fetch_rb    <= unsigned(fetch_instr(15 downto 11));
    fetch_func  <= fetch_instr(10 downto 0);
    fetch_imm16 <= fetch_instr(15 downto 0);
 
@@ -147,22 +149,22 @@ begin
             elsif fetch_ra = fd_bypass then
                decode_va   <= std_logic_vector(alu_result);
             else
-               decode_va   <= regs(fetch_ra);
+               decode_va   <= regs(to_integer(fetch_ra));
             end if;
             if fetch_rb = 0 then
                decode_vb   <= (others => '0');
             elsif fetch_rb = fd_bypass then
                decode_vb   <= std_logic_vector(alu_result);
             else
-               decode_vb   <= regs(fetch_rb);
+               decode_vb   <= regs(to_integer(fetch_rb));
             end if;
          end if;
       end if;
    end process;
    decode_op      <= decode_instr(31 downto 26);
-   decode_rd      <= to_integer(unsigned(decode_instr(25 downto 21)));
-   decode_ra      <= to_integer(unsigned(decode_instr(20 downto 16)));
-   decode_rb      <= to_integer(unsigned(decode_instr(15 downto 11)));
+   decode_rd      <= unsigned(decode_instr(25 downto 21));
+   decode_ra      <= unsigned(decode_instr(20 downto 16));
+   decode_rb      <= unsigned(decode_instr(15 downto 11));
    decode_func    <= decode_instr(10 downto 0);
    decode_imm16   <= decode_instr(15 downto 0);
    decode_sum     <= signed(decode_va) + signed(decode_vb);
@@ -182,11 +184,13 @@ begin
    -- Stage 2: Execute
 
    -- Determine the type of instruction.
-   process(decode_op, decode_valid, decode_func)
+   process(decode_op, decode_valid, decode_func, decode_ra)
    begin
       exec_load      <= '0';
       exec_store     <= '0';
       exec_math      <= '0';
+      exec_link      <= '0';
+      wait_alu       <= '0';
       update_carry   <= '0';
       case decode_op is
          when "110000" | "110001" | "110010" 
@@ -213,34 +217,31 @@ begin
             | "101010"  -- andni
             | "100011"  -- xor, pcmpne
             | "101011"  -- xori
-            | "010000" | "011000"   -- mul, muli
-            | "010010"  -- idiv, idivu
             | "100100"  -- sra, src, srl, sext, clz, swap, wdc
             | "010001" | "011001" -- bs, bsi
             | "010110"  => -- float
             exec_math <= decode_valid;
+         when "010010"  -- idiv, idivu
+            | "010000" | "011000" => -- mul, muli
+            wait_alu    <= decode_valid;
+         when "100110" =>
+            exec_link <= decode_valid and decode_ra(2);
          when others =>
             null;
       end case;
    end process;
 
    -- Determine the next execution state.
-   process(exec_state, decode_op, dready, decode_valid, exec_load,
-           exec_store, alu_ready)
+   process(exec_state, decode_op, dready, decode_valid,
+           exec_load, exec_store, wait_alu, alu_ready)
    begin
       next_exec_state <= exec_state;
       case exec_state is
          when EXEC_IDLE =>
-            if decode_valid = '1' then
-               if exec_load = '1' or exec_store = '1' then
-                  next_exec_state <= EXEC_INIT_XFER;
-               elsif decode_op = "010000" or decode_op = "011000" then
-                  -- Multiply
-                  next_exec_state <= EXEC_ALU;
-               elsif decode_op = "010010" then
-                  -- Divide
-                  next_exec_state <= EXEC_ALU;
-               end if;
+            if exec_load = '1' or exec_store = '1' then
+               next_exec_state <= EXEC_INIT_XFER;
+            elsif wait_alu = '1' then
+               next_exec_state <= EXEC_ALU;
             end if;
          when EXEC_INIT_XFER =>
             next_exec_state <= EXEC_WAIT_XFER;
@@ -273,7 +274,7 @@ begin
       if exec_math = '1' or exec_load = '1' then
          fd_bypass <= decode_rd;
       else
-         fd_bypass <= 0;
+         fd_bypass <= (others => '0');
       end if;
    end process;
 
@@ -283,23 +284,21 @@ begin
       if clk'event and clk = '1' then
          case exec_state is
             when EXEC_IDLE =>
-               if decode_valid = '1' then
-                  if exec_math = '1' then
-                     regs(decode_rd) <= std_logic_vector(alu_result);
-                  end if;
-                  if update_carry = '1' then
-                     msr(CARRY_BIT) <= alu_cout;
-                  end if;
+               if exec_math = '1' then
+                  regs(to_integer(decode_rd)) <= std_logic_vector(alu_result);
+               end if;
+               if update_carry = '1' then
+                  msr(CARRY_BIT) <= alu_cout;
                end if;
             when EXEC_INIT_XFER =>
                null;
             when EXEC_WAIT_XFER =>
                if exec_load = '1' and dready = '1' then
-                  regs(decode_rd) <= std_logic_vector(alu_result);
+                  regs(to_integer(decode_rd)) <= std_logic_vector(alu_result);
                end if;
             when EXEC_ALU =>
                if alu_ready = '1' then
-                  regs(decode_rd) <= std_logic_vector(alu_result);
+                  regs(to_integer(decode_rd)) <= std_logic_vector(alu_result);
                end if;
          end case;
       end if;
@@ -339,7 +338,7 @@ begin
             if decode_rd = 0 then
                dout <= (others => '0');
             else
-               dout <= regs(decode_rd);
+               dout <= regs(to_integer(decode_rd));
             end if;
          end if;
       end if;
@@ -409,8 +408,8 @@ begin
       );
 
    -- Program counter
-   process(pc, decode_valid, decode_op, decode_ra, decode_va, decode_vb,
-           decode_pc, decode_sumi, decode_imm32)
+   process(pc, decode_valid, decode_op, decode_ra, decode_rd,
+           decode_va, decode_vb, decode_pc, decode_sumi, decode_imm32)
       variable pc_plus_vb  : std_logic_vector(31 downto 0);
       variable pc_plus_4   : std_logic_vector(31 downto 0);
       variable pc_plus_imm : std_logic_vector(31 downto 0);
@@ -423,58 +422,53 @@ begin
       flush_fetch    <= '0';
       flush_decode   <= '0';
       next_pc        <= pc_plus_4;
+      case decode_rd(3 downto 0) is
+         when "0000" => -- beq
+            take_branch := unsigned(decode_va) = 0;
+         when "0001" => -- bne
+            take_branch := unsigned(decode_va) /= 0;
+         when "0010" => -- blt
+            take_branch := signed(decode_va) < 0;
+         when "0011" => -- ble
+            take_branch := signed(decode_va) <= 0;
+         when "0100" => -- bgt
+            take_branch := signed(decode_va) > 0;
+         when "0101" => -- bge
+            take_branch := signed(decode_va) >= 0;
+         when others =>
+            take_branch := false;
+      end case;
       if decode_valid = '1' and decode_op = "100110" then
-         case decode_ra is
-            when 0 => -- BR
-               next_pc        <= pc_plus_vb;
-               flush_fetch    <= '1';
-               flush_decode   <= '1';
-            when 16 | 20 => -- BRD, BRLD
-               next_pc        <= pc_plus_vb;
-               flush_decode   <= '1';
-            when 8 | 12 => -- BRA, BRK
-               next_pc        <= decode_vb;
-               flush_fetch    <= '1';
-               flush_decode   <= '1';
-            when 24 | 28 => -- BRAD, BRALD
-               next_pc        <= decode_vb;
-               flush_decode   <= '1';
-            when others =>
-               null;
-         end case;
-      elsif decode_valid = '1' and decode_op = "101110" then
-         -- BRI, BRID, BRLID, BRAI, BRAID, BRAIDR, BRKI
-         next_pc        <= pc_plus_imm;
-         flush_decode   <= '1';
-         if to_unsigned(decode_ra, 5)(4) = '0' then
-            -- No delay slot.
-            flush_fetch <= '1';
+         -- br
+         if decode_ra(3) = '1' then
+            next_pc <= decode_vb;
+         else
+            next_pc <= pc_plus_vb;
          end if;
+         flush_fetch  <= not decode_ra(4);
+         flush_decode <= '1';
+      elsif decode_valid = '1' and decode_op = "101110" then
+         -- bri
+         if decode_ra(3) = '1' then
+            next_pc <= std_logic_vector(decode_imm32);
+         else
+            next_pc <= pc_plus_imm;
+         end if;
+         flush_fetch  <= not decode_ra(4);
+         flush_decode <= '1';
       elsif decode_valid = '1' and decode_op = "101111" then
-         take_branch := false;
-         case decode_rd is
-            when 0 | 32 => -- BEQI, BEQID
-               take_branch := unsigned(decode_va) = 0;
-            when 1 | 33 => -- BNEI, BNEID
-               take_branch := unsigned(decode_va) /= 0;
-            when 2 | 34 => -- BLTI, BLTID
-               take_branch := signed(decode_va) < 0;
-            when 3 | 35 => -- BLEI, BLEID
-               take_branch := signed(decode_va) <= 0;
-            when 4 | 36 => -- BGTI, BGTID
-               take_branch := signed(decode_va) > 0;
-            when 5 | 37 => -- BGEI, BGEID
-               take_branch := signed(decode_va) >= 0;
-            when others =>
-               null;
-         end case;
+         -- bcci
          if take_branch then
-            if to_unsigned(decode_rd, 5)(4) = '0' then
-               -- No delay slot.
-               flush_fetch <= '1';
-            end if;
+            flush_fetch <= not decode_rd(4);
             flush_decode <= '1';
             next_pc <= pc_plus_imm;
+         end if;
+      elsif decode_valid = '1' and decode_op = "100111" then
+         -- bcc
+         if take_branch then
+            flush_fetch <= not decode_rd(4);
+            flush_decode <= '1';
+            next_pc <= std_logic_vector(decode_imm32);
          end if;
       end if;
    end process;
