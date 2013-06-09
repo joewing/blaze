@@ -350,22 +350,22 @@ begin
             end if;
             sz_offset := decode_op(1 downto 0) & decode_addr(1 downto 0);
             case sz_offset is
-               when "00" & "00"  => -- byte 0
+               when "00" & "11"  => -- byte 0
                   dmask <= "0001";
                   dout  <= value;
-               when "00" & "01"  => -- byte 1
+               when "00" & "10"  => -- byte 1
                   dmask <= "0010";
                   dout  <= value(23 downto 0) & x"00";
-               when "00" & "10"  => -- byte 2
+               when "00" & "01"  => -- byte 2
                   dmask <= "0100";
                   dout  <= value(15 downto 0) & x"0000";
-               when "00" & "11"  => -- byte 3
+               when "00" & "00"  => -- byte 3
                   dmask <= "1000";
                   dout  <= value(7 downto 0) & x"000000";
                when "01" & "00"  => -- half 0
                   dmask <= "0011";
                   dout  <= value;
-               when "10" & "10"  => -- half 2
+               when "01" & "10"  => -- half 2
                   dmask <= "1100";
                   dout  <= value(15 downto 0) & x"0000";
                when others       => -- word
@@ -476,8 +476,8 @@ begin
          else
             next_pc <= pc_plus_vb;
          end if;
-         flush_decode  <= not decode_ra(4);
-         flush_fetch <= '1';
+         flush_decode <= not decode_ra(4);
+         flush_fetch  <= '1';
       elsif decode_valid = '1' and decode_op = "101110" then
          -- bri
          if decode_ra(3) = '1' then
@@ -485,26 +485,26 @@ begin
          else
             next_pc <= pc_plus_imm;
          end if;
-         flush_decode  <= not decode_ra(4);
-         flush_fetch <= '1';
+         flush_decode <= not decode_ra(4);
+         flush_fetch  <= '1';
       elsif decode_valid = '1' and decode_op = "101111" then
          -- bcci
          if take_branch then
             flush_decode <= not decode_rd(4);
-            flush_fetch <= '1';
-            next_pc <= pc_plus_imm;
+            flush_fetch  <= '1';
+            next_pc      <= pc_plus_imm;
          end if;
       elsif decode_valid = '1' and decode_op = "100111" then
          -- bcc
          if take_branch then
             flush_decode <= not decode_rd(4);
-            flush_fetch <= '1';
-            next_pc <= std_logic_vector(decode_imm32);
+            flush_fetch  <= '1';
+            next_pc      <= std_logic_vector(decode_imm32);
          end if;
       elsif decode_valid = '1' and decode_op = "101101" then
          -- rt
          flush_fetch <= '1';
-         next_pc <= pc_plus_imm;
+         next_pc     <= pc_plus_imm;
       end if;
    end process;
 
