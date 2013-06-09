@@ -473,6 +473,10 @@ begin
             flush_decode <= '1';
             next_pc <= std_logic_vector(decode_imm32);
          end if;
+      elsif decode_valid = '1' and decode_op = "101101" then
+         -- rt
+         flush_decode <= '1';
+         next_pc <= pc_plus_imm;
       end if;
    end process;
 

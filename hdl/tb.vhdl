@@ -123,15 +123,15 @@ begin
                    "] <= " & integer'image(to_integer(signed(init_data)));
          elsif dre = '1' then
             timer    <= 10;
-            report "READ[" & integer'image(to_integer(unsigned(daddr))) &
+            report "READ[" & integer'image(to_integer(signed(daddr))) &
                "] => " & integer'image(to_integer(
-               signed(ram(to_integer(unsigned(daddr(30 downto 2)))))));
-            dbuffer  <= ram(to_integer(unsigned(daddr(30 downto 2))));
+               signed(ram(to_integer(unsigned(daddr(31 downto 2)))))));
+            dbuffer  <= ram(to_integer(unsigned(daddr(31 downto 2))));
          elsif dwe = '1' then
             timer    <= 10;
-            report "WRITE[" & integer'image(to_integer(unsigned(daddr))) &
+            report "WRITE[" & integer'image(to_integer(signed(daddr))) &
                "] <= " & integer'image(to_integer(signed(dout)));
-            ram(to_integer(unsigned(daddr(30 downto 2)))) <= dout;
+            ram(to_integer(unsigned(daddr(31 downto 2)))) <= dout;
          elsif timer > 0 then
             timer <= timer - 1;
          end if;
@@ -147,7 +147,7 @@ begin
          if rst = '1' then
             iready <= '1';
          elsif ire = '1' then
-            iin      <= ram(to_integer(unsigned(iaddr(30 downto 2))));
+            iin      <= ram(to_integer(unsigned(iaddr(31 downto 2))));
             iready   <= '1';
          end if;
       end if;
