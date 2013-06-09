@@ -111,6 +111,29 @@ begin
          when "010010" =>
             result <= div_result;
             ready  <= div_ready;
+         when "100100" =>
+            case func is
+               when "00000000001" =>
+                  -- sra
+                  result <= unsigned(shift_right(signed(ina), 1));
+                  cout   <= ina(0);
+               when "00000100001" =>
+                  -- src
+                  result <= shift_right(ina, 1)(31 downto 1) & cin;
+                  cout   <= ina(0);
+               when "00001000001" =>
+                  -- srl
+                  result <= shift_right(ina, 1);
+                  cout   <= ina(0);
+               when "00001100001" =>
+                  -- sext16
+                  result <= unsigned(resize(signed(ina(15 downto 0)), 32));
+               when "00001100000" =>
+                  -- sext8
+                  result <= unsigned(resize(signed(ina(7 downto 0)), 32));
+               when others =>
+                  result <= ina;
+            end case;
          when others =>
             result  <= unsigned(din);
       end case;
