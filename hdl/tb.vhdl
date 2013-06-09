@@ -48,13 +48,14 @@ architecture tb_arch of tb is
    signal dready     : std_logic;
    signal din        : std_logic_vector(31 downto 0);
    signal dout       : std_logic_vector(31 downto 0);
-   signal daddr      : std_logic_vector(31 downto 0);
+   signal daddr      : std_logic_vector(31 downto 2);
    signal dre        : std_logic;
    signal dwe        : std_logic;
+   signal dmask      : std_logic_vector(3 downto 0);
    signal iready     : std_logic;
    signal iin        : std_logic_vector(31 downto 0);
    signal ire        : std_logic;
-   signal iaddr      : std_logic_vector(31 downto 0);
+   signal iaddr      : std_logic_vector(31 downto 2);
    signal timer      : natural;
    signal dbuffer    : std_logic_vector(31 downto 0);
    signal init_addr  : integer;
@@ -125,13 +126,19 @@ begin
             timer    <= 10;
             report "READ[" & integer'image(to_integer(signed(daddr))) &
                "] => " & integer'image(to_integer(
-               signed(ram(to_integer(unsigned(daddr(31 downto 2)))))));
-            dbuffer  <= ram(to_integer(unsigned(daddr(31 downto 2))));
+               signed(ram(to_integer(unsigned(daddr))))));
+            dbuffer  <= ram(to_integer(unsigned(daddr)));
          elsif dwe = '1' then
             timer    <= 10;
             report "WRITE[" & integer'image(to_integer(signed(daddr))) &
-               "] <= " & integer'image(to_integer(signed(dout)));
-            ram(to_integer(unsigned(daddr(31 downto 2)))) <= dout;
+               "] <= " & integer'image(to_integer(signed(dout))) & " MASK: " &
+               integer'image(to_integer(unsigned(dmask)));
+            for b in 0 to 3 loop
+               if dmask(b) = '1' then
+                  ram(to_integer(unsigned(daddr)))(b * 8 + 7 downto b * 8)
+                     <= dout(b * 8 + 7 downto b * 8);
+               end if;
+            end loop;
          elsif timer > 0 then
             timer <= timer - 1;
          end if;
@@ -147,7 +154,7 @@ begin
          if rst = '1' then
             iready <= '1';
          elsif ire = '1' then
-            iin      <= ram(to_integer(unsigned(iaddr(31 downto 2))));
+            iin      <= ram(to_integer(unsigned(iaddr)));
             iready   <= '1';
          end if;
       end if;
@@ -161,6 +168,7 @@ begin
          din      => din,
          dout     => dout,
          daddr    => daddr,
+         dmask    => dmask,
          dre      => dre,
          dwe      => dwe,
          iready   => iready,

@@ -10,14 +10,14 @@ entity blaze is
       dready   : in  std_logic;
       din      : in  std_logic_vector(31 downto 0);
       dout     : out std_logic_vector(31 downto 0);
-      daddr    : out std_logic_vector(31 downto 0);
+      daddr    : out std_logic_vector(31 downto 2);
       dre      : out std_logic;
       dwe      : out std_logic;
       dmask    : out std_logic_vector(3 downto 0);
       iready   : in  std_logic;
       iin      : in  std_logic_vector(31 downto 0);
       ire      : out std_logic;
-      iaddr    : out std_logic_vector(31 downto 0)
+      iaddr    : out std_logic_vector(31 downto 2)
    );
 end blaze;
 
@@ -173,7 +173,7 @@ begin
    decode_sumi    <= signed(decode_va) + decode_imm32;
    decode_addr    <= std_logic_vector(decode_sumi) when decode_op(3) = '1'
                      else std_logic_vector(decode_sum);
-   daddr <= decode_addr;
+   daddr <= decode_addr(31 downto 2);
    process(ireg, ireg_valid, decode_imm16)
    begin
       if ireg_valid = '1' then
@@ -332,19 +332,46 @@ begin
 
    -- Drive data memory ports.
    process(clk)
+      variable sz_offset   : std_logic_vector(3 downto 0);
+      variable value       : std_logic_vector(31 downto 0);
    begin
       if clk'event and clk = '1' then
          dre   <= '0';
          dwe   <= '0';
          dout  <= (others => 'Z');
+         dmask <= (others => '0');
          if next_exec_state = EXEC_INIT_XFER then
             dre <= exec_load;
             dwe <= exec_store;
             if decode_rd = 0 then
-               dout <= (others => '0');
+               value := (others => '0');
             else
-               dout <= regs(to_integer(decode_rd));
+               value := regs(to_integer(decode_rd));
             end if;
+            sz_offset := decode_op(1 downto 0) & decode_addr(1 downto 0);
+            case sz_offset is
+               when "00" & "00"  => -- byte 0
+                  dmask <= "0001";
+                  dout  <= value;
+               when "00" & "01"  => -- byte 1
+                  dmask <= "0010";
+                  dout  <= value(23 downto 0) & x"00";
+               when "00" & "10"  => -- byte 2
+                  dmask <= "0100";
+                  dout  <= value(15 downto 0) & x"0000";
+               when "00" & "11"  => -- byte 3
+                  dmask <= "1000";
+                  dout  <= value(7 downto 0) & x"000000";
+               when "01" & "00"  => -- half 0
+                  dmask <= "0011";
+                  dout  <= value;
+               when "10" & "10"  => -- half 2
+                  dmask <= "1100";
+                  dout  <= value(15 downto 0) & x"0000";
+               when others       => -- word
+                  dmask <= "1111";  -- word
+                  dout  <= value;
+            end case;
          end if;
       end if;
    end process;
@@ -491,7 +518,7 @@ begin
          end if;
       end if;
    end process;
-   iaddr <= next_pc;
+   iaddr <= next_pc(31 downto 2);
    ire   <= exec_ready;
 
 end blaze_arch;
