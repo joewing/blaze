@@ -26,9 +26,14 @@ architecture arch of blaze_alu is
    signal mult_ready    : std_logic;
    signal mult_result   : unsigned(63 downto 0);
 
+   signal div_ready     : std_logic;
+   signal div_result    : unsigned(31 downto 0);
+
 begin
 
-   process(op, func, ina, inb, cin, din, mult_result)
+   process(op, func, ina, inb, cin, din,
+           mult_result, mult_ready,
+           div_result, div_ready)
       variable carry       : unsigned(31 downto 0);
       variable ina_c       : unsigned(31 downto 0);
       variable not_ina_1   : unsigned(31 downto 0);
@@ -104,7 +109,8 @@ begin
                end if;
             end loop;
          when "010010" =>
-            result <= (others => 'X'); -- TODO
+            result <= div_result;
+            ready  <= div_ready;
          when others =>
             result  <= unsigned(din);
       end case;
@@ -141,6 +147,20 @@ begin
          a_signed => mult_a_signed,
          b_signed => mult_b_signed,
          result   => mult_result
+      );
+
+   div : entity work.blaze_divider
+      generic map (
+         WIDTH => 32
+      )
+      port map (
+         clk         => clk,
+         start       => start,
+         ready       => div_ready,
+         ina         => ina,
+         inb         => inb,
+         is_signed   => func(1),
+         result      => div_result
       );
 
 end arch;

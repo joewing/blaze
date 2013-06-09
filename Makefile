@@ -1,5 +1,6 @@
 
 FILES= hdl/blaze_multiplier.vhdl \
+       hdl/blaze_divider.vhdl \
        hdl/blaze_alu.vhdl \
        hdl/blaze.vhdl \
        hdl/tb.vhdl

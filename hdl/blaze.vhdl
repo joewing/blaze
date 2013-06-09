@@ -378,7 +378,7 @@ begin
    end process;
 
    -- Drive ALU inputs.
-   process(decode_instr, decode_va, decode_vb, decode_imm16)
+   process(exec_state, decode_va, decode_vb, decode_imm16)
    begin
       if decode_op(3) = '0' then
          alu_inb <= unsigned(decode_vb);
