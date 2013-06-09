@@ -224,7 +224,8 @@ begin
          when "010010"  -- idiv, idivu
             | "010000" | "011000" => -- mul, muli
             wait_alu    <= decode_valid;
-         when "100110" =>
+         when "100110" | "101110" =>
+            -- br, bri
             exec_link <= decode_valid and decode_ra(2);
          when others =>
             null;
@@ -286,6 +287,8 @@ begin
             when EXEC_IDLE =>
                if exec_math = '1' then
                   regs(to_integer(decode_rd)) <= std_logic_vector(alu_result);
+               elsif exec_link = '1' then
+                  regs(to_integer(decode_rd)) <= decode_pc;
                end if;
                if update_carry = '1' then
                   msr(CARRY_BIT) <= alu_cout;
