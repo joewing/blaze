@@ -34,7 +34,6 @@ architecture blaze_arch of blaze is
    type register_array_type is array(natural range 0 to 31) of register_type;
    subtype instr_type is std_logic_vector(5 downto 0);
 
-   signal fetch_cancel  : std_logic;
    signal fetch_valid   : std_logic;
    signal fetch_pc      : std_logic_vector(31 downto 0);
    signal fetch_instr   : std_logic_vector(31 downto 0);
@@ -72,7 +71,6 @@ architecture blaze_arch of blaze is
    signal exec_link        : std_logic;
    signal wait_alu         : std_logic;
    signal update_carry     : std_logic;
-   signal flush_fetch      : std_logic;
    signal flush_decode     : std_logic;
 
    signal regs    : register_array_type;
@@ -119,15 +117,12 @@ begin
    process(clk)
    begin
       if clk'event and clk = '1' then
-         if rst = '1' then
-            fetch_cancel <= '0';
-         elsif exec_ready = '1' then
+         if exec_ready = '1' then
             fetch_pc <= next_pc;
-            fetch_cancel <= flush_fetch;
          end if;
       end if;
    end process;
-   fetch_valid <= iready and not fetch_cancel;
+   fetch_valid <= iready;
    fetch_instr <= iin;
    fetch_op    <= fetch_instr(31 downto 26);
    fetch_rd    <= unsigned(fetch_instr(25 downto 21));
@@ -450,7 +445,6 @@ begin
       pc_plus_vb  := std_logic_vector(signed(decode_pc) + signed(decode_vb));
       pc_plus_4   := std_logic_vector(signed(pc) + to_signed(4, 32));
       pc_plus_imm := std_logic_vector(signed(decode_pc) + decode_imm32);
-      flush_fetch    <= '0';
       flush_decode   <= '0';
       next_pc        <= pc_plus_4;
       case decode_rd(3 downto 0) is
@@ -477,7 +471,6 @@ begin
             next_pc <= pc_plus_vb;
          end if;
          flush_decode <= not decode_ra(4);
-         flush_fetch  <= '1';
       elsif decode_valid = '1' and decode_op = "101110" then
          -- bri
          if decode_ra(3) = '1' then
@@ -486,24 +479,20 @@ begin
             next_pc <= pc_plus_imm;
          end if;
          flush_decode <= not decode_ra(4);
-         flush_fetch  <= '1';
       elsif decode_valid = '1' and decode_op = "101111" then
          -- bcci
          if take_branch then
             flush_decode <= not decode_rd(4);
-            flush_fetch  <= '1';
             next_pc      <= pc_plus_imm;
          end if;
       elsif decode_valid = '1' and decode_op = "100111" then
          -- bcc
          if take_branch then
             flush_decode <= not decode_rd(4);
-            flush_fetch  <= '1';
             next_pc      <= std_logic_vector(decode_imm32);
          end if;
       elsif decode_valid = '1' and decode_op = "101101" then
          -- rt
-         flush_fetch <= '1';
          next_pc     <= pc_plus_imm;
       end if;
    end process;
