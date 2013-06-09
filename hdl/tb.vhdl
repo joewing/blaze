@@ -60,7 +60,7 @@ architecture tb_arch of tb is
    signal init_addr  : integer;
    signal init_data  : std_logic_vector(31 downto 0);
 
-   signal ram : word_array_type(0 to 255) := (others => (others => 'X'));
+   signal ram : word_array_type(0 to 1023) := (others => (others => 'X'));
 
 begin
 

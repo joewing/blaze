@@ -382,12 +382,12 @@ begin
    end process;
 
    -- Drive ALU inputs.
-   process(exec_state, decode_va, decode_vb, decode_imm16)
+   process(exec_state, decode_va, decode_vb, decode_imm32)
    begin
       if decode_op(3) = '0' then
          alu_inb <= unsigned(decode_vb);
       else
-         alu_inb <= unsigned(resize(signed(decode_imm16), 32));
+         alu_inb <= unsigned(decode_imm32);
       end if;
       if exec_state = EXEC_IDLE then
          alu_start <= '1';
