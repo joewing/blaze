@@ -1,60 +1,62 @@
 [*]
 [*] GTKWave Analyzer v3.3.37 (w)1999-2012 BSI
-[*] Sat Jun  8 12:48:30 2013
+[*] Sun Jun  9 22:44:03 2013
 [*]
 [dumpfile] "/Users/joewing/devel/blaze/dump.ghw"
-[dumpfile_mtime] "Sat Jun  8 12:46:31 2013"
-[dumpfile_size] 213027
+[dumpfile_mtime] "Sun Jun  9 22:35:14 2013"
+[dumpfile_size] 303074
 [savefile] "/Users/joewing/devel/blaze/wave.gtkw"
-[timestart] 670400000
-[size] 1999 1030
-[pos] 194 102
-*-26.279440 1080000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[timestart] 9581900000
+[size] 1999 1166
+[pos] -1 -1
+*-26.063967 9687400000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
 [treeopen] top.tb.
 [treeopen] top.tb.cpu.
-[treeopen] top.tb.cpu.regs.
 [sst_width] 198
 [signals_width] 295
 [sst_expanded] 1
-[sst_vpaned_height] 317
+[sst_vpaned_height] 365
 @28
 top.tb.cpu.rst
 top.tb.cpu.clk
 top.tb.cpu.iready
 top.tb.cpu.ire
 @22
-#{top.tb.cpu.iaddr[31:0]} top.tb.cpu.iaddr[31] top.tb.cpu.iaddr[30] top.tb.cpu.iaddr[29] top.tb.cpu.iaddr[28] top.tb.cpu.iaddr[27] top.tb.cpu.iaddr[26] top.tb.cpu.iaddr[25] top.tb.cpu.iaddr[24] top.tb.cpu.iaddr[23] top.tb.cpu.iaddr[22] top.tb.cpu.iaddr[21] top.tb.cpu.iaddr[20] top.tb.cpu.iaddr[19] top.tb.cpu.iaddr[18] top.tb.cpu.iaddr[17] top.tb.cpu.iaddr[16] top.tb.cpu.iaddr[15] top.tb.cpu.iaddr[14] top.tb.cpu.iaddr[13] top.tb.cpu.iaddr[12] top.tb.cpu.iaddr[11] top.tb.cpu.iaddr[10] top.tb.cpu.iaddr[9] top.tb.cpu.iaddr[8] top.tb.cpu.iaddr[7] top.tb.cpu.iaddr[6] top.tb.cpu.iaddr[5] top.tb.cpu.iaddr[4] top.tb.cpu.iaddr[3] top.tb.cpu.iaddr[2] top.tb.cpu.iaddr[1] top.tb.cpu.iaddr[0]
+#{top.tb.cpu.iaddr[31:0]} top.tb.cpu.iaddr[31] top.tb.cpu.iaddr[30] top.tb.cpu.iaddr[29] top.tb.cpu.iaddr[28] top.tb.cpu.iaddr[27] top.tb.cpu.iaddr[26] top.tb.cpu.iaddr[25] top.tb.cpu.iaddr[24] top.tb.cpu.iaddr[23] top.tb.cpu.iaddr[22] top.tb.cpu.iaddr[21] top.tb.cpu.iaddr[20] top.tb.cpu.iaddr[19] top.tb.cpu.iaddr[18] top.tb.cpu.iaddr[17] top.tb.cpu.iaddr[16] top.tb.cpu.iaddr[15] top.tb.cpu.iaddr[14] top.tb.cpu.iaddr[13] top.tb.cpu.iaddr[12] top.tb.cpu.iaddr[11] top.tb.cpu.iaddr[10] top.tb.cpu.iaddr[9] top.tb.cpu.iaddr[8] top.tb.cpu.iaddr[7] top.tb.cpu.iaddr[6] top.tb.cpu.iaddr[5] top.tb.cpu.iaddr[4] top.tb.cpu.iaddr[3] top.tb.cpu.iaddr[2]
 #{top.tb.cpu.iin[31:0]} top.tb.cpu.iin[31] top.tb.cpu.iin[30] top.tb.cpu.iin[29] top.tb.cpu.iin[28] top.tb.cpu.iin[27] top.tb.cpu.iin[26] top.tb.cpu.iin[25] top.tb.cpu.iin[24] top.tb.cpu.iin[23] top.tb.cpu.iin[22] top.tb.cpu.iin[21] top.tb.cpu.iin[20] top.tb.cpu.iin[19] top.tb.cpu.iin[18] top.tb.cpu.iin[17] top.tb.cpu.iin[16] top.tb.cpu.iin[15] top.tb.cpu.iin[14] top.tb.cpu.iin[13] top.tb.cpu.iin[12] top.tb.cpu.iin[11] top.tb.cpu.iin[10] top.tb.cpu.iin[9] top.tb.cpu.iin[8] top.tb.cpu.iin[7] top.tb.cpu.iin[6] top.tb.cpu.iin[5] top.tb.cpu.iin[4] top.tb.cpu.iin[3] top.tb.cpu.iin[2] top.tb.cpu.iin[1] top.tb.cpu.iin[0]
 @28
 top.tb.cpu.fetch_valid
-top.tb.cpu.decode_valid
 @22
 #{top.tb.cpu.fetch_instr[31:0]} top.tb.cpu.fetch_instr[31] top.tb.cpu.fetch_instr[30] top.tb.cpu.fetch_instr[29] top.tb.cpu.fetch_instr[28] top.tb.cpu.fetch_instr[27] top.tb.cpu.fetch_instr[26] top.tb.cpu.fetch_instr[25] top.tb.cpu.fetch_instr[24] top.tb.cpu.fetch_instr[23] top.tb.cpu.fetch_instr[22] top.tb.cpu.fetch_instr[21] top.tb.cpu.fetch_instr[20] top.tb.cpu.fetch_instr[19] top.tb.cpu.fetch_instr[18] top.tb.cpu.fetch_instr[17] top.tb.cpu.fetch_instr[16] top.tb.cpu.fetch_instr[15] top.tb.cpu.fetch_instr[14] top.tb.cpu.fetch_instr[13] top.tb.cpu.fetch_instr[12] top.tb.cpu.fetch_instr[11] top.tb.cpu.fetch_instr[10] top.tb.cpu.fetch_instr[9] top.tb.cpu.fetch_instr[8] top.tb.cpu.fetch_instr[7] top.tb.cpu.fetch_instr[6] top.tb.cpu.fetch_instr[5] top.tb.cpu.fetch_instr[4] top.tb.cpu.fetch_instr[3] top.tb.cpu.fetch_instr[2] top.tb.cpu.fetch_instr[1] top.tb.cpu.fetch_instr[0]
+#{top.tb.cpu.fetch_pc[31:0]} top.tb.cpu.fetch_pc[31] top.tb.cpu.fetch_pc[30] top.tb.cpu.fetch_pc[29] top.tb.cpu.fetch_pc[28] top.tb.cpu.fetch_pc[27] top.tb.cpu.fetch_pc[26] top.tb.cpu.fetch_pc[25] top.tb.cpu.fetch_pc[24] top.tb.cpu.fetch_pc[23] top.tb.cpu.fetch_pc[22] top.tb.cpu.fetch_pc[21] top.tb.cpu.fetch_pc[20] top.tb.cpu.fetch_pc[19] top.tb.cpu.fetch_pc[18] top.tb.cpu.fetch_pc[17] top.tb.cpu.fetch_pc[16] top.tb.cpu.fetch_pc[15] top.tb.cpu.fetch_pc[14] top.tb.cpu.fetch_pc[13] top.tb.cpu.fetch_pc[12] top.tb.cpu.fetch_pc[11] top.tb.cpu.fetch_pc[10] top.tb.cpu.fetch_pc[9] top.tb.cpu.fetch_pc[8] top.tb.cpu.fetch_pc[7] top.tb.cpu.fetch_pc[6] top.tb.cpu.fetch_pc[5] top.tb.cpu.fetch_pc[4] top.tb.cpu.fetch_pc[3] top.tb.cpu.fetch_pc[2] top.tb.cpu.fetch_pc[1] top.tb.cpu.fetch_pc[0]
 @28
 #{top.tb.cpu.fetch_op[5:0]} top.tb.cpu.fetch_op[5] top.tb.cpu.fetch_op[4] top.tb.cpu.fetch_op[3] top.tb.cpu.fetch_op[2] top.tb.cpu.fetch_op[1] top.tb.cpu.fetch_op[0]
-top.tb.cpu.fetch_rd
-top.tb.cpu.fetch_ra
-top.tb.cpu.fetch_rb
+top.tb.cpu.fetch_rd[0]
+top.tb.cpu.fetch_ra[0]
+top.tb.cpu.fetch_rb[0]
+top.tb.cpu.decode_valid
 @22
 #{top.tb.cpu.decode_instr[31:0]} top.tb.cpu.decode_instr[31] top.tb.cpu.decode_instr[30] top.tb.cpu.decode_instr[29] top.tb.cpu.decode_instr[28] top.tb.cpu.decode_instr[27] top.tb.cpu.decode_instr[26] top.tb.cpu.decode_instr[25] top.tb.cpu.decode_instr[24] top.tb.cpu.decode_instr[23] top.tb.cpu.decode_instr[22] top.tb.cpu.decode_instr[21] top.tb.cpu.decode_instr[20] top.tb.cpu.decode_instr[19] top.tb.cpu.decode_instr[18] top.tb.cpu.decode_instr[17] top.tb.cpu.decode_instr[16] top.tb.cpu.decode_instr[15] top.tb.cpu.decode_instr[14] top.tb.cpu.decode_instr[13] top.tb.cpu.decode_instr[12] top.tb.cpu.decode_instr[11] top.tb.cpu.decode_instr[10] top.tb.cpu.decode_instr[9] top.tb.cpu.decode_instr[8] top.tb.cpu.decode_instr[7] top.tb.cpu.decode_instr[6] top.tb.cpu.decode_instr[5] top.tb.cpu.decode_instr[4] top.tb.cpu.decode_instr[3] top.tb.cpu.decode_instr[2] top.tb.cpu.decode_instr[1] top.tb.cpu.decode_instr[0]
+#{top.tb.cpu.decode_pc[31:0]} top.tb.cpu.decode_pc[31] top.tb.cpu.decode_pc[30] top.tb.cpu.decode_pc[29] top.tb.cpu.decode_pc[28] top.tb.cpu.decode_pc[27] top.tb.cpu.decode_pc[26] top.tb.cpu.decode_pc[25] top.tb.cpu.decode_pc[24] top.tb.cpu.decode_pc[23] top.tb.cpu.decode_pc[22] top.tb.cpu.decode_pc[21] top.tb.cpu.decode_pc[20] top.tb.cpu.decode_pc[19] top.tb.cpu.decode_pc[18] top.tb.cpu.decode_pc[17] top.tb.cpu.decode_pc[16] top.tb.cpu.decode_pc[15] top.tb.cpu.decode_pc[14] top.tb.cpu.decode_pc[13] top.tb.cpu.decode_pc[12] top.tb.cpu.decode_pc[11] top.tb.cpu.decode_pc[10] top.tb.cpu.decode_pc[9] top.tb.cpu.decode_pc[8] top.tb.cpu.decode_pc[7] top.tb.cpu.decode_pc[6] top.tb.cpu.decode_pc[5] top.tb.cpu.decode_pc[4] top.tb.cpu.decode_pc[3] top.tb.cpu.decode_pc[2] top.tb.cpu.decode_pc[1] top.tb.cpu.decode_pc[0]
 @28
 #{top.tb.cpu.decode_op[5:0]} top.tb.cpu.decode_op[5] top.tb.cpu.decode_op[4] top.tb.cpu.decode_op[3] top.tb.cpu.decode_op[2] top.tb.cpu.decode_op[1] top.tb.cpu.decode_op[0]
-top.tb.cpu.decode_rd
-top.tb.cpu.decode_ra
-top.tb.cpu.decode_rb
 top.tb.cpu.exec_ready
 top.tb.cpu.next_exec_state
 top.tb.cpu.exec_state
 @22
 #{top.tb.cpu.exec_din[31:0]} top.tb.cpu.exec_din[31] top.tb.cpu.exec_din[30] top.tb.cpu.exec_din[29] top.tb.cpu.exec_din[28] top.tb.cpu.exec_din[27] top.tb.cpu.exec_din[26] top.tb.cpu.exec_din[25] top.tb.cpu.exec_din[24] top.tb.cpu.exec_din[23] top.tb.cpu.exec_din[22] top.tb.cpu.exec_din[21] top.tb.cpu.exec_din[20] top.tb.cpu.exec_din[19] top.tb.cpu.exec_din[18] top.tb.cpu.exec_din[17] top.tb.cpu.exec_din[16] top.tb.cpu.exec_din[15] top.tb.cpu.exec_din[14] top.tb.cpu.exec_din[13] top.tb.cpu.exec_din[12] top.tb.cpu.exec_din[11] top.tb.cpu.exec_din[10] top.tb.cpu.exec_din[9] top.tb.cpu.exec_din[8] top.tb.cpu.exec_din[7] top.tb.cpu.exec_din[6] top.tb.cpu.exec_din[5] top.tb.cpu.exec_din[4] top.tb.cpu.exec_din[3] top.tb.cpu.exec_din[2] top.tb.cpu.exec_din[1] top.tb.cpu.exec_din[0]
+@25
+#{top.tb.cpu.decode_rd[4:0]} top.tb.cpu.decode_rd[4] top.tb.cpu.decode_rd[3] top.tb.cpu.decode_rd[2] top.tb.cpu.decode_rd[1] top.tb.cpu.decode_rd[0]
+@24
+#{top.tb.cpu.decode_ra[4:0]} top.tb.cpu.decode_ra[4] top.tb.cpu.decode_ra[3] top.tb.cpu.decode_ra[2] top.tb.cpu.decode_ra[1] top.tb.cpu.decode_ra[0]
+#{top.tb.cpu.decode_rb[4:0]} top.tb.cpu.decode_rb[4] top.tb.cpu.decode_rb[3] top.tb.cpu.decode_rb[2] top.tb.cpu.decode_rb[1] top.tb.cpu.decode_rb[0]
+@22
 #{top.tb.cpu.regs[1][31:0]} top.tb.cpu.regs[1][31] top.tb.cpu.regs[1][30] top.tb.cpu.regs[1][29] top.tb.cpu.regs[1][28] top.tb.cpu.regs[1][27] top.tb.cpu.regs[1][26] top.tb.cpu.regs[1][25] top.tb.cpu.regs[1][24] top.tb.cpu.regs[1][23] top.tb.cpu.regs[1][22] top.tb.cpu.regs[1][21] top.tb.cpu.regs[1][20] top.tb.cpu.regs[1][19] top.tb.cpu.regs[1][18] top.tb.cpu.regs[1][17] top.tb.cpu.regs[1][16] top.tb.cpu.regs[1][15] top.tb.cpu.regs[1][14] top.tb.cpu.regs[1][13] top.tb.cpu.regs[1][12] top.tb.cpu.regs[1][11] top.tb.cpu.regs[1][10] top.tb.cpu.regs[1][9] top.tb.cpu.regs[1][8] top.tb.cpu.regs[1][7] top.tb.cpu.regs[1][6] top.tb.cpu.regs[1][5] top.tb.cpu.regs[1][4] top.tb.cpu.regs[1][3] top.tb.cpu.regs[1][2] top.tb.cpu.regs[1][1] top.tb.cpu.regs[1][0]
 #{top.tb.cpu.regs[2][31:0]} top.tb.cpu.regs[2][31] top.tb.cpu.regs[2][30] top.tb.cpu.regs[2][29] top.tb.cpu.regs[2][28] top.tb.cpu.regs[2][27] top.tb.cpu.regs[2][26] top.tb.cpu.regs[2][25] top.tb.cpu.regs[2][24] top.tb.cpu.regs[2][23] top.tb.cpu.regs[2][22] top.tb.cpu.regs[2][21] top.tb.cpu.regs[2][20] top.tb.cpu.regs[2][19] top.tb.cpu.regs[2][18] top.tb.cpu.regs[2][17] top.tb.cpu.regs[2][16] top.tb.cpu.regs[2][15] top.tb.cpu.regs[2][14] top.tb.cpu.regs[2][13] top.tb.cpu.regs[2][12] top.tb.cpu.regs[2][11] top.tb.cpu.regs[2][10] top.tb.cpu.regs[2][9] top.tb.cpu.regs[2][8] top.tb.cpu.regs[2][7] top.tb.cpu.regs[2][6] top.tb.cpu.regs[2][5] top.tb.cpu.regs[2][4] top.tb.cpu.regs[2][3] top.tb.cpu.regs[2][2] top.tb.cpu.regs[2][1] top.tb.cpu.regs[2][0]
 #{top.tb.cpu.regs[3][31:0]} top.tb.cpu.regs[3][31] top.tb.cpu.regs[3][30] top.tb.cpu.regs[3][29] top.tb.cpu.regs[3][28] top.tb.cpu.regs[3][27] top.tb.cpu.regs[3][26] top.tb.cpu.regs[3][25] top.tb.cpu.regs[3][24] top.tb.cpu.regs[3][23] top.tb.cpu.regs[3][22] top.tb.cpu.regs[3][21] top.tb.cpu.regs[3][20] top.tb.cpu.regs[3][19] top.tb.cpu.regs[3][18] top.tb.cpu.regs[3][17] top.tb.cpu.regs[3][16] top.tb.cpu.regs[3][15] top.tb.cpu.regs[3][14] top.tb.cpu.regs[3][13] top.tb.cpu.regs[3][12] top.tb.cpu.regs[3][11] top.tb.cpu.regs[3][10] top.tb.cpu.regs[3][9] top.tb.cpu.regs[3][8] top.tb.cpu.regs[3][7] top.tb.cpu.regs[3][6] top.tb.cpu.regs[3][5] top.tb.cpu.regs[3][4] top.tb.cpu.regs[3][3] top.tb.cpu.regs[3][2] top.tb.cpu.regs[3][1] top.tb.cpu.regs[3][0]
 #{top.tb.cpu.regs[4][31:0]} top.tb.cpu.regs[4][31] top.tb.cpu.regs[4][30] top.tb.cpu.regs[4][29] top.tb.cpu.regs[4][28] top.tb.cpu.regs[4][27] top.tb.cpu.regs[4][26] top.tb.cpu.regs[4][25] top.tb.cpu.regs[4][24] top.tb.cpu.regs[4][23] top.tb.cpu.regs[4][22] top.tb.cpu.regs[4][21] top.tb.cpu.regs[4][20] top.tb.cpu.regs[4][19] top.tb.cpu.regs[4][18] top.tb.cpu.regs[4][17] top.tb.cpu.regs[4][16] top.tb.cpu.regs[4][15] top.tb.cpu.regs[4][14] top.tb.cpu.regs[4][13] top.tb.cpu.regs[4][12] top.tb.cpu.regs[4][11] top.tb.cpu.regs[4][10] top.tb.cpu.regs[4][9] top.tb.cpu.regs[4][8] top.tb.cpu.regs[4][7] top.tb.cpu.regs[4][6] top.tb.cpu.regs[4][5] top.tb.cpu.regs[4][4] top.tb.cpu.regs[4][3] top.tb.cpu.regs[4][2] top.tb.cpu.regs[4][1] top.tb.cpu.regs[4][0]
-@23
 #{top.tb.cpu.regs[5][31:0]} top.tb.cpu.regs[5][31] top.tb.cpu.regs[5][30] top.tb.cpu.regs[5][29] top.tb.cpu.regs[5][28] top.tb.cpu.regs[5][27] top.tb.cpu.regs[5][26] top.tb.cpu.regs[5][25] top.tb.cpu.regs[5][24] top.tb.cpu.regs[5][23] top.tb.cpu.regs[5][22] top.tb.cpu.regs[5][21] top.tb.cpu.regs[5][20] top.tb.cpu.regs[5][19] top.tb.cpu.regs[5][18] top.tb.cpu.regs[5][17] top.tb.cpu.regs[5][16] top.tb.cpu.regs[5][15] top.tb.cpu.regs[5][14] top.tb.cpu.regs[5][13] top.tb.cpu.regs[5][12] top.tb.cpu.regs[5][11] top.tb.cpu.regs[5][10] top.tb.cpu.regs[5][9] top.tb.cpu.regs[5][8] top.tb.cpu.regs[5][7] top.tb.cpu.regs[5][6] top.tb.cpu.regs[5][5] top.tb.cpu.regs[5][4] top.tb.cpu.regs[5][3] top.tb.cpu.regs[5][2] top.tb.cpu.regs[5][1] top.tb.cpu.regs[5][0]
-@22
 #{top.tb.cpu.alu_result[31:0]} top.tb.cpu.alu_result[31] top.tb.cpu.alu_result[30] top.tb.cpu.alu_result[29] top.tb.cpu.alu_result[28] top.tb.cpu.alu_result[27] top.tb.cpu.alu_result[26] top.tb.cpu.alu_result[25] top.tb.cpu.alu_result[24] top.tb.cpu.alu_result[23] top.tb.cpu.alu_result[22] top.tb.cpu.alu_result[21] top.tb.cpu.alu_result[20] top.tb.cpu.alu_result[19] top.tb.cpu.alu_result[18] top.tb.cpu.alu_result[17] top.tb.cpu.alu_result[16] top.tb.cpu.alu_result[15] top.tb.cpu.alu_result[14] top.tb.cpu.alu_result[13] top.tb.cpu.alu_result[12] top.tb.cpu.alu_result[11] top.tb.cpu.alu_result[10] top.tb.cpu.alu_result[9] top.tb.cpu.alu_result[8] top.tb.cpu.alu_result[7] top.tb.cpu.alu_result[6] top.tb.cpu.alu_result[5] top.tb.cpu.alu_result[4] top.tb.cpu.alu_result[3] top.tb.cpu.alu_result[2] top.tb.cpu.alu_result[1] top.tb.cpu.alu_result[0]
 #{top.tb.cpu.alu_ina[31:0]} top.tb.cpu.alu_ina[31] top.tb.cpu.alu_ina[30] top.tb.cpu.alu_ina[29] top.tb.cpu.alu_ina[28] top.tb.cpu.alu_ina[27] top.tb.cpu.alu_ina[26] top.tb.cpu.alu_ina[25] top.tb.cpu.alu_ina[24] top.tb.cpu.alu_ina[23] top.tb.cpu.alu_ina[22] top.tb.cpu.alu_ina[21] top.tb.cpu.alu_ina[20] top.tb.cpu.alu_ina[19] top.tb.cpu.alu_ina[18] top.tb.cpu.alu_ina[17] top.tb.cpu.alu_ina[16] top.tb.cpu.alu_ina[15] top.tb.cpu.alu_ina[14] top.tb.cpu.alu_ina[13] top.tb.cpu.alu_ina[12] top.tb.cpu.alu_ina[11] top.tb.cpu.alu_ina[10] top.tb.cpu.alu_ina[9] top.tb.cpu.alu_ina[8] top.tb.cpu.alu_ina[7] top.tb.cpu.alu_ina[6] top.tb.cpu.alu_ina[5] top.tb.cpu.alu_ina[4] top.tb.cpu.alu_ina[3] top.tb.cpu.alu_ina[2] top.tb.cpu.alu_ina[1] top.tb.cpu.alu_ina[0]
 #{top.tb.cpu.alu_inb[31:0]} top.tb.cpu.alu_inb[31] top.tb.cpu.alu_inb[30] top.tb.cpu.alu_inb[29] top.tb.cpu.alu_inb[28] top.tb.cpu.alu_inb[27] top.tb.cpu.alu_inb[26] top.tb.cpu.alu_inb[25] top.tb.cpu.alu_inb[24] top.tb.cpu.alu_inb[23] top.tb.cpu.alu_inb[22] top.tb.cpu.alu_inb[21] top.tb.cpu.alu_inb[20] top.tb.cpu.alu_inb[19] top.tb.cpu.alu_inb[18] top.tb.cpu.alu_inb[17] top.tb.cpu.alu_inb[16] top.tb.cpu.alu_inb[15] top.tb.cpu.alu_inb[14] top.tb.cpu.alu_inb[13] top.tb.cpu.alu_inb[12] top.tb.cpu.alu_inb[11] top.tb.cpu.alu_inb[10] top.tb.cpu.alu_inb[9] top.tb.cpu.alu_inb[8] top.tb.cpu.alu_inb[7] top.tb.cpu.alu_inb[6] top.tb.cpu.alu_inb[5] top.tb.cpu.alu_inb[4] top.tb.cpu.alu_inb[3] top.tb.cpu.alu_inb[2] top.tb.cpu.alu_inb[1] top.tb.cpu.alu_inb[0]
@@ -64,7 +66,7 @@ top.tb.cpu.dre
 top.tb.cpu.dwe
 @22
 #{top.tb.cpu.dout[31:0]} top.tb.cpu.dout[31] top.tb.cpu.dout[30] top.tb.cpu.dout[29] top.tb.cpu.dout[28] top.tb.cpu.dout[27] top.tb.cpu.dout[26] top.tb.cpu.dout[25] top.tb.cpu.dout[24] top.tb.cpu.dout[23] top.tb.cpu.dout[22] top.tb.cpu.dout[21] top.tb.cpu.dout[20] top.tb.cpu.dout[19] top.tb.cpu.dout[18] top.tb.cpu.dout[17] top.tb.cpu.dout[16] top.tb.cpu.dout[15] top.tb.cpu.dout[14] top.tb.cpu.dout[13] top.tb.cpu.dout[12] top.tb.cpu.dout[11] top.tb.cpu.dout[10] top.tb.cpu.dout[9] top.tb.cpu.dout[8] top.tb.cpu.dout[7] top.tb.cpu.dout[6] top.tb.cpu.dout[5] top.tb.cpu.dout[4] top.tb.cpu.dout[3] top.tb.cpu.dout[2] top.tb.cpu.dout[1] top.tb.cpu.dout[0]
-#{top.tb.cpu.daddr[31:0]} top.tb.cpu.daddr[31] top.tb.cpu.daddr[30] top.tb.cpu.daddr[29] top.tb.cpu.daddr[28] top.tb.cpu.daddr[27] top.tb.cpu.daddr[26] top.tb.cpu.daddr[25] top.tb.cpu.daddr[24] top.tb.cpu.daddr[23] top.tb.cpu.daddr[22] top.tb.cpu.daddr[21] top.tb.cpu.daddr[20] top.tb.cpu.daddr[19] top.tb.cpu.daddr[18] top.tb.cpu.daddr[17] top.tb.cpu.daddr[16] top.tb.cpu.daddr[15] top.tb.cpu.daddr[14] top.tb.cpu.daddr[13] top.tb.cpu.daddr[12] top.tb.cpu.daddr[11] top.tb.cpu.daddr[10] top.tb.cpu.daddr[9] top.tb.cpu.daddr[8] top.tb.cpu.daddr[7] top.tb.cpu.daddr[6] top.tb.cpu.daddr[5] top.tb.cpu.daddr[4] top.tb.cpu.daddr[3] top.tb.cpu.daddr[2] top.tb.cpu.daddr[1] top.tb.cpu.daddr[0]
+#{top.tb.cpu.daddr[31:0]} top.tb.cpu.daddr[31] top.tb.cpu.daddr[30] top.tb.cpu.daddr[29] top.tb.cpu.daddr[28] top.tb.cpu.daddr[27] top.tb.cpu.daddr[26] top.tb.cpu.daddr[25] top.tb.cpu.daddr[24] top.tb.cpu.daddr[23] top.tb.cpu.daddr[22] top.tb.cpu.daddr[21] top.tb.cpu.daddr[20] top.tb.cpu.daddr[19] top.tb.cpu.daddr[18] top.tb.cpu.daddr[17] top.tb.cpu.daddr[16] top.tb.cpu.daddr[15] top.tb.cpu.daddr[14] top.tb.cpu.daddr[13] top.tb.cpu.daddr[12] top.tb.cpu.daddr[11] top.tb.cpu.daddr[10] top.tb.cpu.daddr[9] top.tb.cpu.daddr[8] top.tb.cpu.daddr[7] top.tb.cpu.daddr[6] top.tb.cpu.daddr[5] top.tb.cpu.daddr[4] top.tb.cpu.daddr[3] top.tb.cpu.daddr[2]
 @c00022
 #{top.tb.cpu.din[31:0]} top.tb.cpu.din[31] top.tb.cpu.din[30] top.tb.cpu.din[29] top.tb.cpu.din[28] top.tb.cpu.din[27] top.tb.cpu.din[26] top.tb.cpu.din[25] top.tb.cpu.din[24] top.tb.cpu.din[23] top.tb.cpu.din[22] top.tb.cpu.din[21] top.tb.cpu.din[20] top.tb.cpu.din[19] top.tb.cpu.din[18] top.tb.cpu.din[17] top.tb.cpu.din[16] top.tb.cpu.din[15] top.tb.cpu.din[14] top.tb.cpu.din[13] top.tb.cpu.din[12] top.tb.cpu.din[11] top.tb.cpu.din[10] top.tb.cpu.din[9] top.tb.cpu.din[8] top.tb.cpu.din[7] top.tb.cpu.din[6] top.tb.cpu.din[5] top.tb.cpu.din[4] top.tb.cpu.din[3] top.tb.cpu.din[2] top.tb.cpu.din[1] top.tb.cpu.din[0]
 @28
@@ -109,7 +111,7 @@ top.tb.cpu.din[0]
 @24
 #{top.tb.cpu.pc[31:0]} top.tb.cpu.pc[31] top.tb.cpu.pc[30] top.tb.cpu.pc[29] top.tb.cpu.pc[28] top.tb.cpu.pc[27] top.tb.cpu.pc[26] top.tb.cpu.pc[25] top.tb.cpu.pc[24] top.tb.cpu.pc[23] top.tb.cpu.pc[22] top.tb.cpu.pc[21] top.tb.cpu.pc[20] top.tb.cpu.pc[19] top.tb.cpu.pc[18] top.tb.cpu.pc[17] top.tb.cpu.pc[16] top.tb.cpu.pc[15] top.tb.cpu.pc[14] top.tb.cpu.pc[13] top.tb.cpu.pc[12] top.tb.cpu.pc[11] top.tb.cpu.pc[10] top.tb.cpu.pc[9] top.tb.cpu.pc[8] top.tb.cpu.pc[7] top.tb.cpu.pc[6] top.tb.cpu.pc[5] top.tb.cpu.pc[4] top.tb.cpu.pc[3] top.tb.cpu.pc[2] top.tb.cpu.pc[1] top.tb.cpu.pc[0]
 @28
-top.tb.cpu.fd_bypass
+top.tb.cpu.fd_bypass[0]
 @22
 #{top.tb.cpu.decode_vb[31:0]} top.tb.cpu.decode_vb[31] top.tb.cpu.decode_vb[30] top.tb.cpu.decode_vb[29] top.tb.cpu.decode_vb[28] top.tb.cpu.decode_vb[27] top.tb.cpu.decode_vb[26] top.tb.cpu.decode_vb[25] top.tb.cpu.decode_vb[24] top.tb.cpu.decode_vb[23] top.tb.cpu.decode_vb[22] top.tb.cpu.decode_vb[21] top.tb.cpu.decode_vb[20] top.tb.cpu.decode_vb[19] top.tb.cpu.decode_vb[18] top.tb.cpu.decode_vb[17] top.tb.cpu.decode_vb[16] top.tb.cpu.decode_vb[15] top.tb.cpu.decode_vb[14] top.tb.cpu.decode_vb[13] top.tb.cpu.decode_vb[12] top.tb.cpu.decode_vb[11] top.tb.cpu.decode_vb[10] top.tb.cpu.decode_vb[9] top.tb.cpu.decode_vb[8] top.tb.cpu.decode_vb[7] top.tb.cpu.decode_vb[6] top.tb.cpu.decode_vb[5] top.tb.cpu.decode_vb[4] top.tb.cpu.decode_vb[3] top.tb.cpu.decode_vb[2] top.tb.cpu.decode_vb[1] top.tb.cpu.decode_vb[0]
 #{top.tb.cpu.decode_va[31:0]} top.tb.cpu.decode_va[31] top.tb.cpu.decode_va[30] top.tb.cpu.decode_va[29] top.tb.cpu.decode_va[28] top.tb.cpu.decode_va[27] top.tb.cpu.decode_va[26] top.tb.cpu.decode_va[25] top.tb.cpu.decode_va[24] top.tb.cpu.decode_va[23] top.tb.cpu.decode_va[22] top.tb.cpu.decode_va[21] top.tb.cpu.decode_va[20] top.tb.cpu.decode_va[19] top.tb.cpu.decode_va[18] top.tb.cpu.decode_va[17] top.tb.cpu.decode_va[16] top.tb.cpu.decode_va[15] top.tb.cpu.decode_va[14] top.tb.cpu.decode_va[13] top.tb.cpu.decode_va[12] top.tb.cpu.decode_va[11] top.tb.cpu.decode_va[10] top.tb.cpu.decode_va[9] top.tb.cpu.decode_va[8] top.tb.cpu.decode_va[7] top.tb.cpu.decode_va[6] top.tb.cpu.decode_va[5] top.tb.cpu.decode_va[4] top.tb.cpu.decode_va[3] top.tb.cpu.decode_va[2] top.tb.cpu.decode_va[1] top.tb.cpu.decode_va[0]
@@ -118,10 +120,24 @@ top.tb.cpu.fd_bypass
 #{top.tb.cpu.decode_pc[31:0]} top.tb.cpu.decode_pc[31] top.tb.cpu.decode_pc[30] top.tb.cpu.decode_pc[29] top.tb.cpu.decode_pc[28] top.tb.cpu.decode_pc[27] top.tb.cpu.decode_pc[26] top.tb.cpu.decode_pc[25] top.tb.cpu.decode_pc[24] top.tb.cpu.decode_pc[23] top.tb.cpu.decode_pc[22] top.tb.cpu.decode_pc[21] top.tb.cpu.decode_pc[20] top.tb.cpu.decode_pc[19] top.tb.cpu.decode_pc[18] top.tb.cpu.decode_pc[17] top.tb.cpu.decode_pc[16] top.tb.cpu.decode_pc[15] top.tb.cpu.decode_pc[14] top.tb.cpu.decode_pc[13] top.tb.cpu.decode_pc[12] top.tb.cpu.decode_pc[11] top.tb.cpu.decode_pc[10] top.tb.cpu.decode_pc[9] top.tb.cpu.decode_pc[8] top.tb.cpu.decode_pc[7] top.tb.cpu.decode_pc[6] top.tb.cpu.decode_pc[5] top.tb.cpu.decode_pc[4] top.tb.cpu.decode_pc[3] top.tb.cpu.decode_pc[2] top.tb.cpu.decode_pc[1] top.tb.cpu.decode_pc[0]
 @28
 top.tb.cpu.flush_decode
-top.tb.cpu.flush_fetch
 @22
 #{top.tb.cpu.decode_imm16[15:0]} top.tb.cpu.decode_imm16[15] top.tb.cpu.decode_imm16[14] top.tb.cpu.decode_imm16[13] top.tb.cpu.decode_imm16[12] top.tb.cpu.decode_imm16[11] top.tb.cpu.decode_imm16[10] top.tb.cpu.decode_imm16[9] top.tb.cpu.decode_imm16[8] top.tb.cpu.decode_imm16[7] top.tb.cpu.decode_imm16[6] top.tb.cpu.decode_imm16[5] top.tb.cpu.decode_imm16[4] top.tb.cpu.decode_imm16[3] top.tb.cpu.decode_imm16[2] top.tb.cpu.decode_imm16[1] top.tb.cpu.decode_imm16[0]
 @420
 #{top.tb.cpu.decode_imm32[31:0]} top.tb.cpu.decode_imm32[31] top.tb.cpu.decode_imm32[30] top.tb.cpu.decode_imm32[29] top.tb.cpu.decode_imm32[28] top.tb.cpu.decode_imm32[27] top.tb.cpu.decode_imm32[26] top.tb.cpu.decode_imm32[25] top.tb.cpu.decode_imm32[24] top.tb.cpu.decode_imm32[23] top.tb.cpu.decode_imm32[22] top.tb.cpu.decode_imm32[21] top.tb.cpu.decode_imm32[20] top.tb.cpu.decode_imm32[19] top.tb.cpu.decode_imm32[18] top.tb.cpu.decode_imm32[17] top.tb.cpu.decode_imm32[16] top.tb.cpu.decode_imm32[15] top.tb.cpu.decode_imm32[14] top.tb.cpu.decode_imm32[13] top.tb.cpu.decode_imm32[12] top.tb.cpu.decode_imm32[11] top.tb.cpu.decode_imm32[10] top.tb.cpu.decode_imm32[9] top.tb.cpu.decode_imm32[8] top.tb.cpu.decode_imm32[7] top.tb.cpu.decode_imm32[6] top.tb.cpu.decode_imm32[5] top.tb.cpu.decode_imm32[4] top.tb.cpu.decode_imm32[3] top.tb.cpu.decode_imm32[2] top.tb.cpu.decode_imm32[1] top.tb.cpu.decode_imm32[0]
+@22
+#{top.tb.cpu.alu.div.ina[31:0]} top.tb.cpu.alu.div.ina[31] top.tb.cpu.alu.div.ina[30] top.tb.cpu.alu.div.ina[29] top.tb.cpu.alu.div.ina[28] top.tb.cpu.alu.div.ina[27] top.tb.cpu.alu.div.ina[26] top.tb.cpu.alu.div.ina[25] top.tb.cpu.alu.div.ina[24] top.tb.cpu.alu.div.ina[23] top.tb.cpu.alu.div.ina[22] top.tb.cpu.alu.div.ina[21] top.tb.cpu.alu.div.ina[20] top.tb.cpu.alu.div.ina[19] top.tb.cpu.alu.div.ina[18] top.tb.cpu.alu.div.ina[17] top.tb.cpu.alu.div.ina[16] top.tb.cpu.alu.div.ina[15] top.tb.cpu.alu.div.ina[14] top.tb.cpu.alu.div.ina[13] top.tb.cpu.alu.div.ina[12] top.tb.cpu.alu.div.ina[11] top.tb.cpu.alu.div.ina[10] top.tb.cpu.alu.div.ina[9] top.tb.cpu.alu.div.ina[8] top.tb.cpu.alu.div.ina[7] top.tb.cpu.alu.div.ina[6] top.tb.cpu.alu.div.ina[5] top.tb.cpu.alu.div.ina[4] top.tb.cpu.alu.div.ina[3] top.tb.cpu.alu.div.ina[2] top.tb.cpu.alu.div.ina[1] top.tb.cpu.alu.div.ina[0]
+#{top.tb.cpu.alu.div.inb[31:0]} top.tb.cpu.alu.div.inb[31] top.tb.cpu.alu.div.inb[30] top.tb.cpu.alu.div.inb[29] top.tb.cpu.alu.div.inb[28] top.tb.cpu.alu.div.inb[27] top.tb.cpu.alu.div.inb[26] top.tb.cpu.alu.div.inb[25] top.tb.cpu.alu.div.inb[24] top.tb.cpu.alu.div.inb[23] top.tb.cpu.alu.div.inb[22] top.tb.cpu.alu.div.inb[21] top.tb.cpu.alu.div.inb[20] top.tb.cpu.alu.div.inb[19] top.tb.cpu.alu.div.inb[18] top.tb.cpu.alu.div.inb[17] top.tb.cpu.alu.div.inb[16] top.tb.cpu.alu.div.inb[15] top.tb.cpu.alu.div.inb[14] top.tb.cpu.alu.div.inb[13] top.tb.cpu.alu.div.inb[12] top.tb.cpu.alu.div.inb[11] top.tb.cpu.alu.div.inb[10] top.tb.cpu.alu.div.inb[9] top.tb.cpu.alu.div.inb[8] top.tb.cpu.alu.div.inb[7] top.tb.cpu.alu.div.inb[6] top.tb.cpu.alu.div.inb[5] top.tb.cpu.alu.div.inb[4] top.tb.cpu.alu.div.inb[3] top.tb.cpu.alu.div.inb[2] top.tb.cpu.alu.div.inb[1] top.tb.cpu.alu.div.inb[0]
+#{top.tb.cpu.alu.div.result[31:0]} top.tb.cpu.alu.div.result[31] top.tb.cpu.alu.div.result[30] top.tb.cpu.alu.div.result[29] top.tb.cpu.alu.div.result[28] top.tb.cpu.alu.div.result[27] top.tb.cpu.alu.div.result[26] top.tb.cpu.alu.div.result[25] top.tb.cpu.alu.div.result[24] top.tb.cpu.alu.div.result[23] top.tb.cpu.alu.div.result[22] top.tb.cpu.alu.div.result[21] top.tb.cpu.alu.div.result[20] top.tb.cpu.alu.div.result[19] top.tb.cpu.alu.div.result[18] top.tb.cpu.alu.div.result[17] top.tb.cpu.alu.div.result[16] top.tb.cpu.alu.div.result[15] top.tb.cpu.alu.div.result[14] top.tb.cpu.alu.div.result[13] top.tb.cpu.alu.div.result[12] top.tb.cpu.alu.div.result[11] top.tb.cpu.alu.div.result[10] top.tb.cpu.alu.div.result[9] top.tb.cpu.alu.div.result[8] top.tb.cpu.alu.div.result[7] top.tb.cpu.alu.div.result[6] top.tb.cpu.alu.div.result[5] top.tb.cpu.alu.div.result[4] top.tb.cpu.alu.div.result[3] top.tb.cpu.alu.div.result[2] top.tb.cpu.alu.div.result[1] top.tb.cpu.alu.div.result[0]
+@28
+top.tb.cpu.alu.div.ready
+top.tb.cpu.alu.div.count
+top.tb.cpu.alu.div.start
+top.tb.cpu.alu_ready
+top.tb.cpu.alu_start
+top.tb.cpu.alu.div_ready
+@22
+#{top.tb.cpu.ireg[15:0]} top.tb.cpu.ireg[15] top.tb.cpu.ireg[14] top.tb.cpu.ireg[13] top.tb.cpu.ireg[12] top.tb.cpu.ireg[11] top.tb.cpu.ireg[10] top.tb.cpu.ireg[9] top.tb.cpu.ireg[8] top.tb.cpu.ireg[7] top.tb.cpu.ireg[6] top.tb.cpu.ireg[5] top.tb.cpu.ireg[4] top.tb.cpu.ireg[3] top.tb.cpu.ireg[2] top.tb.cpu.ireg[1] top.tb.cpu.ireg[0]
+@28
+top.tb.cpu.ireg_valid
 [pattern_trace] 1
 [pattern_trace] 0

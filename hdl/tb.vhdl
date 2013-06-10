@@ -120,7 +120,7 @@ begin
             timer    <= 0;
             dbuffer  <= (others => 'Z');
             ram(init_addr) <= init_data;
-            report "INIT[" & integer'image(init_addr * 4) &
+            report "INIT[" & integer'image(init_addr) &
                    "] <= " & integer'image(to_integer(signed(init_data)));
          elsif dre = '1' then
             timer    <= 10;
