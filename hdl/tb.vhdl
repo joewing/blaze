@@ -152,10 +152,12 @@ begin
    begin
       if clk'event and clk = '1' then
          if rst = '1' then
-            iready <= '1';
+            iready <= '0';
          elsif ire = '1' then
-            iin      <= ram(to_integer(unsigned(iaddr)));
-            iready   <= '1';
+            iin <= ram(to_integer(unsigned(iaddr)));
+            iready <= '1';
+         else
+            iready <= '1';
          end if;
       end if;
    end process;
