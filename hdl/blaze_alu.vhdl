@@ -29,11 +29,14 @@ architecture arch of blaze_alu is
    signal div_ready     : std_logic;
    signal div_result    : unsigned(31 downto 0);
 
+   signal shift_result  : unsigned(31 downto 0);
+
 begin
 
    process(op, func, ina, inb, cin, din,
            mult_result, mult_ready,
-           div_result, div_ready)
+           div_result, div_ready,
+           shift_result)
       variable carry       : unsigned(31 downto 0);
       variable ina_c       : unsigned(31 downto 0);
       variable not_ina_1   : unsigned(31 downto 0);
@@ -94,20 +97,7 @@ begin
             result <= mult_result(31 downto 0);
             ready  <= mult_ready;
          when "010001" | "011001" => -- bs, bsi
-            for i in 0 to 31 loop
-               if inb(4 downto 0) = i then
-                  if func(10) = '1' then
-                     -- Shift left
-                     result <= shift_left(ina, i);
-                  elsif func(9) = '1' then
-                     -- Shift right arithmetic.
-                     result <= unsigned(shift_right(signed(ina), i));
-                  else
-                     -- Shift right logical.
-                     result <= shift_right(ina, i);
-                  end if;
-               end if;
-            end loop;
+            result <= shift_result;
          when "010010" =>
             result <= div_result;
             ready  <= div_ready;
@@ -184,6 +174,18 @@ begin
          inb         => inb,
          is_signed   => func(1),
          result      => div_result
+      );
+
+   shift : entity work.blaze_shifter
+      generic map (
+         SHIFT_BITS => 5
+      )
+      port map (
+         value_in    => ina,
+         shift_in    => inb(4 downto 0),
+         is_left     => func(10),
+         is_signed   => func(9),
+         result      => shift_result
       );
 
 end arch;
