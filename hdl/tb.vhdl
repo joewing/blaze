@@ -104,7 +104,7 @@ begin
       
       -- Run for a while.
       rst <= '0';
-      for i in 1 to 1000 loop
+      for i in 1 to 10000 loop
          cycle(clk);
       end loop;
 
@@ -120,25 +120,21 @@ begin
             timer    <= 0;
             dbuffer  <= (others => 'Z');
             ram(init_addr) <= init_data;
-            report "INIT[" & integer'image(init_addr) &
-                   "] <= " & integer'image(to_integer(signed(init_data)));
          elsif dre = '1' then
             timer    <= 10;
-            report "READ[" & integer'image(to_integer(signed(daddr))) &
-               "] => " & integer'image(to_integer(
-               signed(ram(to_integer(unsigned(daddr))))));
             dbuffer  <= ram(to_integer(unsigned(daddr)));
          elsif dwe = '1' then
             timer    <= 10;
-            report "WRITE[" & integer'image(to_integer(signed(daddr))) &
-               "] <= " & integer'image(to_integer(signed(dout))) & " MASK: " &
-               integer'image(to_integer(unsigned(dmask)));
-            for b in 0 to 3 loop
-               if dmask(b) = '1' then
-                  ram(to_integer(unsigned(daddr)))(b * 8 + 7 downto b * 8)
-                     <= dout(b * 8 + 7 downto b * 8);
-               end if;
-            end loop;
+            if to_integer(signed(daddr)) = 2 ** 30 / 4 then
+               report "OUTPUT " & integer'image(to_integer(signed(dout)));
+            else
+               for b in 0 to 3 loop
+                  if dmask(b) = '1' then
+                     ram(to_integer(unsigned(daddr)))(b * 8 + 7 downto b * 8)
+                        <= dout(b * 8 + 7 downto b * 8);
+                  end if;
+               end loop;
+            end if;
          elsif timer > 0 then
             timer <= timer - 1;
          end if;

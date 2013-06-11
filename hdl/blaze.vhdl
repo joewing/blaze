@@ -448,11 +448,13 @@ begin
       variable pc_plus_vb  : std_logic_vector(31 downto 0);
       variable pc_plus_4   : std_logic_vector(31 downto 0);
       variable pc_plus_imm : std_logic_vector(31 downto 0);
+      variable va_plus_imm : std_logic_vector(31 downto 0);
       variable take_branch : boolean;
    begin
       pc_plus_vb  := std_logic_vector(signed(decode_pc) + signed(decode_vb));
       pc_plus_4   := std_logic_vector(signed(pc) + to_signed(4, 32));
       pc_plus_imm := std_logic_vector(signed(decode_pc) + decode_imm32);
+      va_plus_imm := std_logic_vector(signed(decode_va) + decode_imm32);
       flush_fetch    <= '0';
       flush_decode   <= '0';
       next_pc        <= pc_plus_4;
@@ -506,7 +508,7 @@ begin
          end if;
       elsif decode_valid = '1' and decode_op = "101101" then
          -- rt
-         next_pc     <= pc_plus_imm;
+         next_pc     <= va_plus_imm;
          flush_fetch <= '1';
       end if;
    end process;
