@@ -56,6 +56,7 @@ begin
          result <= shifted;
       end if;
    end process;
+
    ready <= '1';
 
 end arch;

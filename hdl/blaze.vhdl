@@ -216,11 +216,11 @@ begin
             | "100011"  -- xor, pcmpne
             | "101011"  -- xori
             | "100100"  -- sra, src, srl, sext, clz, swap, wdc
-            | "010001" | "011001" -- bs, bsi
-            | "010110"  => -- float
+            | "010001" | "011001" => -- bs, bsi
             exec_math <= decode_valid;
-         when "010010"  -- idiv, idivu
-            | "010000" | "011000" => -- mul, muli
+         when "010010"              -- idiv, idivu
+            | "010000" | "011000"   -- mul, muli
+            | "010110" => -- float
             wait_alu    <= decode_valid;
          when "100110" | "101110" =>
             -- br, bri
@@ -268,9 +268,11 @@ begin
    end process;
 
    -- Drive the bypass signal.
-   process(exec_math, exec_load, decode_rd)
+   process(exec_math, exec_load, decode_rd, wait_alu, alu_ready)
    begin
       if exec_math = '1' or exec_load = '1' then
+         fd_bypass <= decode_rd;
+      elsif wait_alu = '1' and alu_ready = '1' then
          fd_bypass <= decode_rd;
       else
          fd_bypass <= (others => '0');

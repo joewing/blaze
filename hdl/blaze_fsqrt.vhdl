@@ -23,8 +23,10 @@ architecture arch of blaze_fsqrt is
    signal count   : natural;
    signal q       : unsigned(WIDTH - 1 downto 0);
    signal s       : unsigned(WIDTH - 1 downto 0);
+   signal next_s  : unsigned(WIDTH - 1 downto 0);
    signal r       : unsigned(WIDTH - 1 downto 0);
    signal exp     : unsigned(EXPONENT - 1 downto 0);
+   signal qout    : unsigned(FRACTION downto 0);
 
    signal expa    : unsigned(EXPONENT - 1 downto 0);
    signal fraca   : unsigned(FRACTION downto 0);
@@ -32,10 +34,11 @@ architecture arch of blaze_fsqrt is
 
 begin
 
-   expa  <= value_in(WIDTH - 2 downto WIDTH - 1 - EXPONENT);
-   fraca <= to_unsigned(0, fraca'length) when expa = 0
-            else "1" & value_in(FRACTION - 1 downto 0);
-   c     <= expa - 9;
+   expa     <= value_in(WIDTH - 2 downto WIDTH - 1 - EXPONENT);
+   fraca    <= to_unsigned(0, fraca'length) when expa = 0
+               else "1" & value_in(FRACTION - 1 downto 0);
+   next_s   <= shift_right(s, 1);
+   c        <= expa - 9;
 
    process(clk)
       variable t : unsigned(WIDTH - 1 downto 0);
@@ -43,9 +46,9 @@ begin
       if clk'event and clk = '1' then
          if start = '1' then
             q     <= to_unsigned(2 ** (FRACTION + 1), q'length);
-            s     <= to_unsigned(2 ** FRACTION, s'length);
-            exp   <= shift_right(expa + 125, 1);
-            if c(0) = '1' then
+            s     <= to_unsigned(2 ** (FRACTION + 1), s'length);
+            exp   <= shift_right(expa + 1, 1) + 62;
+            if c(0) = '0' then
                r <= shift_left(resize(fraca, r'length), 1) -
                     2 ** (FRACTION + 1);
             else
@@ -54,12 +57,12 @@ begin
             end if;
             count <= FRACTION + 1;
          elsif count /= 0 then
-            s <= shift_right(s, 1);
-            t := shift_right(r, 1) - shift_right(q, 1);
-            if t(WIDTH -  1) = '1' then
+            s <= next_s;
+            t := shift_left(r, 1) - (shift_left(q, 1) + next_s);
+            if t(WIDTH - 1) = '1' then
                r <= shift_left(r, 1);
             else
-               q <= q + s;
+               q <= q + next_s;
                r <= t;
             end if;
             if expa = 0 then
@@ -73,7 +76,17 @@ begin
       end if;
    end process;
 
-   result <= resize("0" & exp, WIDTH) + resize(q(FRACTION downto 0), WIDTH);
+   process(q)
+      variable shifted  : unsigned(FRACTION downto 0);
+      variable last     : unsigned(FRACTION downto 0);
+   begin
+      shifted  := q(FRACTION + 1 downto 1);
+      last     := resize(q(0 downto 0), FRACTION + 1);
+      qout     <= shifted or last;
+   end process;
+
+   result <= ("0" & exp & to_unsigned(0, FRACTION)) +
+             resize(qout, WIDTH);
    ready  <= '1' when count = 0 else '0';
 
 end arch;

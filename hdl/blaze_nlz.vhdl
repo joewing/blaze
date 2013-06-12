@@ -22,7 +22,7 @@ begin
    begin
       result <= to_unsigned(WIDTH, WIDTH);
       for i in WIDTH - 1 downto 0 loop
-         if value(i) = '1' then
+         if value(WIDTH - i - 1) = '1' then
             result <= to_unsigned(i, WIDTH);
          end if;
       end loop;

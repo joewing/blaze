@@ -35,6 +35,7 @@ begin
 
    process(func,
            itof_ready, itof_result,
+           ftoi_ready, ftoi_result,
            fsqrt_ready, fsqrt_result)
    begin
       case func is

@@ -29,6 +29,8 @@ architecture arch of blaze_itof is
 begin
 
    sign        <= value(WIDTH - 1);
+   exp         <= to_unsigned(WIDTH, EXPONENT) - resize(zeros, EXPONENT)  +
+                  2 ** (EXPONENT - 1) - 2;
    frac_shift  <= to_unsigned(FRACTION + 1, WIDTH) + zeros -
                   to_unsigned(WIDTH, WIDTH);
 
