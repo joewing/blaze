@@ -31,6 +31,9 @@ architecture arch of blaze_alu is
 
    signal shift_result  : unsigned(31 downto 0);
 
+   signal fsqrt_ready   : std_logic;
+   signal fsqrt_result  : unsigned(31 downto 0);
+
 begin
 
    process(op, func, ina, inb, cin, din,
@@ -124,6 +127,27 @@ begin
                when others =>
                   result <= ina;
             end case;
+         when "010110" =>
+            case func is
+               when "00000000000" =>   -- fadd
+               when "00010000000" =>   -- fsub
+               when "00100000000" =>   -- fmul
+               when "00110000000" =>   -- fdiv
+               when "01000000000" =>   -- fcmp.un
+               when "01000010000" =>   -- fcmp.lt
+               when "01000100000" =>   -- fcmp.eq
+               when "01000110000" =>   -- fcmp.le
+               when "01001000000" =>   -- fcmp.gt
+               when "01001010000" =>   -- fcmp.ne
+               when "01001100000" =>   -- fcmp.ge
+               when "01010000000" =>   -- flt
+               when "01100000000" =>   -- fint
+               when "01110000000" =>   -- fsqrt
+                  result   <= fsqrt_result;
+                  ready    <= fsqrt_ready;
+               when others =>
+                  result <= unsigned(din);
+            end case;
          when others =>
             result  <= unsigned(din);
       end case;
@@ -186,6 +210,15 @@ begin
          is_left     => func(10),
          is_signed   => func(9),
          result      => shift_result
+      );
+
+   fsqrt : entity work.blaze_fsqrt
+      port map (
+         clk         => clk,
+         start       => start,
+         value_in    => ina,
+         ready       => fsqrt_ready,
+         result      => fsqrt_result
       );
 
 end arch;
