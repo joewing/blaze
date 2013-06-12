@@ -5,20 +5,31 @@ use ieee.numeric_std.all;
 
 entity blaze_shifter is
    generic (
-      SHIFT_BITS  : natural := 5
+      WIDTH       : natural := 32
    );
    port (
       is_left     : in  std_logic;
       is_signed   : in  std_logic;
-      value_in    : in  unsigned(2 ** SHIFT_BITS - 1 downto 0);
-      shift_in    : in  unsigned(SHIFT_BITS - 1 downto 0);
-      result      : out unsigned(2 ** SHIFT_BITS - 1 downto 0)
+      value_in    : in  unsigned(WIDTH - 1 downto 0);
+      shift_in    : in  unsigned(WIDTH - 1 downto 0);
+      result      : out unsigned(WIDTH - 1 downto 0)
    );
 end blaze_shifter;
 
 architecture arch of blaze_shifter is
 
-   constant WIDTH : natural := 2 ** SHIFT_BITS;
+   function log2(n : natural) return natural is
+      variable temp     : natural := n;
+      variable result   : natural := 0;
+   begin
+      while temp > 1 loop
+         result   := result + 1;
+         temp     := temp / 2;
+      end loop;
+      return result;
+   end log2;
+
+   constant SHIFT_BITS : natural := log2(WIDTH);
 
    subtype word_type is unsigned(WIDTH - 1 downto 0);
    type word_array_type is array(0 to SHIFT_BITS) of word_type;

@@ -4,6 +4,11 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity blaze_fsqrt is
+   generic (
+      WIDTH    : natural := 32;
+      FRACTION : natural := 23;
+      EXPONENT : natural := 8
+   );
    port (
       clk      : in  std_logic;
       start    : in  std_logic;
@@ -14,10 +19,6 @@ entity blaze_fsqrt is
 end blaze_fsqrt;
 
 architecture arch of blaze_fsqrt is
-
-   constant WIDTH    : natural := 32;
-   constant EXPONENT : natural := 8;
-   constant FRACTION : natural := 23;
 
    signal count   : natural;
    signal q       : unsigned(WIDTH - 1 downto 0);

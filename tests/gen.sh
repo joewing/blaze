@@ -1,6 +1,6 @@
 #!/bin/sh
 
-OPTS="-O1 -mxl-barrel-shift -mno-xl-soft-mul -mno-xl-soft-div"
+OPTS="-O1 -mxl-barrel-shift -mno-xl-soft-mul -mno-xl-soft-div -mhard-float -mxl-float-convert -mxl-float-sqrt"
 
 mb-as -c -o mbmon.o mbmon.s
 mb-gcc -c -nostdlib $OPTS $1 -o t.o

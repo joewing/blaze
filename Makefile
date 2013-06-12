@@ -2,7 +2,11 @@
 FILES= hdl/blaze_multiplier.vhdl \
        hdl/blaze_divider.vhdl \
        hdl/blaze_shifter.vhdl \
+       hdl/blaze_nlz.vhdl \
+       hdl/blaze_itof.vhdl \
+       hdl/blaze_ftoi.vhdl \
        hdl/blaze_fsqrt.vhdl \
+       hdl/blaze_fpu.vhdl \
        hdl/blaze_alu.vhdl \
        hdl/blaze.vhdl \
        hdl/tb.vhdl
